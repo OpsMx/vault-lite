@@ -2,6 +2,9 @@
 """
 Simple Sentinel API to front a standalone simple Sentinel service locally
 inside a container, or reach out to Vault Enterprise for policy evaluation
+
+TODO:
+    .) Move file actions out of here
 """
 import sys
 import time
@@ -12,6 +15,7 @@ from flask import Flask, Blueprint, request, jsonify
 from flask_cors import CORS
 from flask_restplus import Resource, Api, fields
 from libs import Sentinel
+from libs import Models
 
 VERSION = "0.1"
 NAME = "vault-lite-api"
@@ -33,6 +37,7 @@ API = Api(APP,
 DEBUG = True
 APP.config["DEBUG"] = DEBUG
 Sent = Sentinel.Sentinel(trace=DEBUG)
+MODELS = Models.Models(API=API)
 
 
 def not_implemented():
@@ -80,44 +85,12 @@ class SentinelVersion(Resource):
         return _return(data=Sent.sentinel_version())
 
 
-EXECUTION = API.model('PipeLineExecutionContext', {
-    'pipelineConfigId': fields.String(description=""" The id of the spinnaker
-                                                  pipeline id """,
-                                      default="f779bb0e-2519-44dc-8ab3-ff357822ab23",
-                                      required=True),
-    'origin': fields.String(desciprion="Origin of triggering the pipeline",
-                            default="api",
-                            required=True),
-    'id': fields.String(desciprion=""" Reference id in spinnaker for this
-                                   pipeline """,
-                        default="01E21CMPWYM0NQ33XZ2JGG9FN2",
-                        required=True),
-    'status': fields.String(desciprion="Origin of triggering the pipeline",
-                            default="RUNNING",
-                            required=True)
-})
-POLICY = API.model('VaultPolicy', {
-    'policy': fields.String(description=""" base64 encoded policy """,
-                            required=True),
-    'paths': fields.List(fields.String,
-                         desciprion=""" IGNORED, Vault paths this policy
-                                    applies to """,
-                         default="secrets/spinnaker/*",
-                         required=True),
-    'enforcement_level': fields.String(desciprion=""" IGNORED, Vault
-                                                  enforcement level either
-                                                  hard-mandatory,
-                                                  soft-mandatory
-                                                  or advisory.  """,
-                                       default="hard-mandatory",
-                                       required=True),
-})
 @API.route('/v1/sys/policies/egp/<path:path>', methods=['post', 'put'])
 @API.doc(params={"payload": "${ execution }"})
 class QuerySentinelDocument(Resource):
     @API.response(200, 'Success')
     @API.response(400, 'Validation Error')
-    @API.expect(EXECUTION)
+    @API.expect(MODELS.EXECUTION())
     def post(self, path):
         """ Evaluates the data posted against the policy path queried """
         LOGGER.debug("Validation, received URL: %s", request.path)
@@ -143,7 +116,7 @@ class QuerySentinelDocument(Resource):
 
     @API.response(200, 'Success')
     @API.response(400, 'Validation Error')
-    @API.expect(POLICY)
+    @API.expect(MODELS.POLICY())
     # https://learn.hashicorp.com/vault/identity-access-management/iam-sentinel
     # check for base64 encoding, decode, store as KV..
     def put(self, path):

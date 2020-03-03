@@ -41,7 +41,7 @@ class Sentinel(object):
             state = "Pass"
         while input:
             line = input.pop(0)
-            if re.match('(\s+)?(TRUE|FALSE)', line):
+            if re.match('(\s+)?(TRUE|ERROR)', line):
                 _trace = True
                 LOGGER.debug("A-Z: %s" % line)
             if _trace:

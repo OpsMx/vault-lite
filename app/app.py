@@ -7,15 +7,17 @@ TODO:
     .) Move file actions out of here
 """
 import sys
-import time
+# import time
 import json
 import tempfile
-import os
-from flask import Flask, Blueprint, request, jsonify
+# import os
+# Blueprint, jsonify
+from flask import Flask, request
 from flask_cors import CORS
-from flask_restplus import Resource, Api, fields
+from flask_restplus import Resource, Api
 from libs import Sentinel
 from libs import Models
+from libs import PolicyStore
 
 VERSION = "0.1"
 NAME = "vault-lite-api"
@@ -38,14 +40,7 @@ DEBUG = True
 APP.config["DEBUG"] = DEBUG
 Sent = Sentinel.Sentinel(trace=DEBUG)
 MODELS = Models.Models(API=API)
-
-
-def not_implemented():
-    """ placeholder for missing bits """
-    result = {
-        "message": "Not implemented"
-    }
-    return jsonify(result), 500
+STORE = PolicyStore.PolicyStore()
 
 
 def _return(data={},  fail_code=400):
@@ -57,9 +52,6 @@ def _return(data={},  fail_code=400):
     return data, fail_code
 
 
-#
-# expand to take <string:service> as an option and check backend services
-#
 @API.route('/v1/health', methods=['GET'])
 class Health(Resource):
     @API.response(200, 'Success')
@@ -132,8 +124,10 @@ class QuerySentinelDocument(Resource):
         else:
             LOGGER.error("Unhandled mimetype: %s" % (request.mimetype))
             return {}
-        LOGGER.debug(data)
-        LOGGER.debug("putting policies in this way...: %s" % path)
+        rc = STORE.store_policy(policy=data.policy,
+                                path=data.path,
+                                level=data.enforcement_level)
+        return rc
 
 
 if __name__ == '__main__':

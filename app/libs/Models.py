@@ -1,4 +1,7 @@
+""" Holds the models used for Swagger """
 from flask_restplus import Resource, fields
+import logging
+LOGGER = logging.getLogger(__name__)
 
 
 class Models(Resource):

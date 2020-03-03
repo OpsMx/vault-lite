@@ -6,9 +6,9 @@ wrapped around the sentinel binary.
 NOTES:
 
 """
-import shlex
+# import shlex
 import re
-import json
+# import json
 import time
 from subprocess import check_output
 import logging
@@ -43,7 +43,7 @@ class Sentinel(object):
             line = input.pop(0)
             if re.match('(\s+)?(TRUE|ERROR)', line):
                 _trace = True
-                LOGGER.debug("A-Z: %s" % line)
+                LOGGER.trace("A-Z: %s" % line)
             if _trace:
                 if re.match('\t', line):
                     trace[-1] = "%s %s" % (trace[-1], line.replace('\t', ''))
@@ -67,18 +67,17 @@ class Sentinel(object):
             cmd = ["sentinel", "apply", "-config", config, policy]
             if self.trace:
                 cmd.insert(2, "-trace")
-
             result = check_output(cmd).decode('utf-8').split("\n")
             output = self.sanitize_output(input=result)
-            # output = self.sanitize_output(input=result)
             if output["state"] != "Pass":
-                return {"result": False,
-                        "time": time.time() - start,
-                        "data": output}
-            return {"result": True,
-                    "time": time.time() - start,
-                    "data": output}
-
+                rc = False
+            else:
+                rc = True
+            rv = {"result": rc,
+                  "time": time.time() - start,
+                  "data": output}
+            LOGGER.debug(rv)
+            return rv
         except Exception as e:
             LOGGER.error("Exception caught: %s" % e)
             return {"result": False,

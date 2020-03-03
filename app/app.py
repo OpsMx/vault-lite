@@ -3,15 +3,11 @@
 Simple Sentinel API to front a standalone simple Sentinel service locally
 inside a container, or reach out to Vault Enterprise for policy evaluation
 
-TODO:
-    .) Move file actions out of here
 """
 import sys
-# import time
+import os
 import json
 import tempfile
-# import os
-# Blueprint, jsonify
 from flask import Flask, request
 from flask_cors import CORS
 from flask_restplus import Resource, Api
@@ -23,14 +19,14 @@ VERSION = "0.1"
 NAME = "vault-lite-api"
 NAME_LABEL = "Vault-lite"
 TITLE = "Swaggering ", NAME_LABEL
-POLICY_DIR = "../policy"
+POLICY_DIR = "vault-lite/policies"
 TEMP_DIR = "/tmp"
 
 APP = Flask(__name__)
 # restrict CORS later...
 CORS(APP, resources="/*")
 API = Api(APP,
-          doc='/doc/',
+          doc='/swagger/',
           version=VERSION,
           title=TITLE,
           default=NAME,
@@ -40,7 +36,7 @@ DEBUG = True
 APP.config["DEBUG"] = DEBUG
 Sent = Sentinel.Sentinel(trace=DEBUG)
 MODELS = Models.Models(API=API)
-STORE = PolicyStore.PolicyStore()
+STORE = PolicyStore.PolicyStore(location=POLICY_DIR)
 
 
 def _return(data={},  fail_code=400):
@@ -77,12 +73,15 @@ class SentinelVersion(Resource):
         return _return(data=Sent.sentinel_version())
 
 
-@API.route('/v1/sys/policies/egp/<path:path>', methods=['post', 'put'])
-@API.doc(params={"payload": "${ execution }"})
-class QuerySentinelDocument(Resource):
+@API.route('/v1/sys/policies/egp/<path:path>', methods=['post',
+                                                        'put',
+                                                        'delete',
+                                                        'list'])
+class PolicyHandling(Resource):
     @API.response(200, 'Success')
     @API.response(400, 'Validation Error')
     @API.expect(MODELS.EXECUTION())
+    @API.doc(params={"payload": "${ execution }"})
     def post(self, path):
         """ Evaluates the data posted against the policy path queried """
         LOGGER.debug("Validation, received URL: %s", request.path)
@@ -90,7 +89,7 @@ class QuerySentinelDocument(Resource):
         # sanitize JSON?,
         # should also LOGGER camp?
         SPL = tempfile.NamedTemporaryFile(delete=False,
-                                          prefix="_semi_sentinel_")
+                                          prefix=NAME_LABEL)
         SPL.write(json.dumps(request.json).encode('utf-8'))
         # figure out policy from path,
         #  point at policy directory
@@ -101,9 +100,10 @@ class QuerySentinelDocument(Resource):
             res = Sent.sentinel_apply(config=config,
                                       policy=policy)
         else:
+            policy_path = STORE.get_policy_location(key=path)
             res = Sent.sentinel_apply(config=SPL.name,
-                                      policy="%s/%s" % (POLICY_DIR,
-                                                        "policy.sentinel"))
+                                      policy=policy_path)
+            os.unlink(SPL.name)
         return _return(data=res, fail_code=400)
 
     @API.response(200, 'Success')
@@ -114,19 +114,36 @@ class QuerySentinelDocument(Resource):
     def put(self, path):
         """ Inserts a base64 encoded policy at the given EGP on path basis """
         # LOGGER.debug("auth?: %s" % request.headers)
-        # Default vault PUT
         if request.mimetype == "application/x-www-form-urlencoded":
             # stream.read first, otherwise data is interpreted
             data = json.loads(request.stream.read())
         elif request.mimetype == "application/json":
-            LOGGER.warning("Vault by default does't do json PUTs")
+            LOGGER.warning("Vault by default doesn't do json PUTs")
             data = json.loads(request.data)
         else:
             LOGGER.error("Unhandled mimetype: %s" % (request.mimetype))
             return {}
-        rc = STORE.store_policy(policy=data.policy,
-                                path=data.path,
-                                level=data.enforcement_level)
+        rc = STORE.store_policy(key=path,
+                                paths=data['paths'],
+                                enforcement_level=data['enforcement_level'],
+                                policy=data['policy'])
+        return rc
+
+    @API.response(200, 'Success')
+    @API.response(400, 'Validation Error')
+    @API.expect()
+    def delete(self, path):
+        """ Remove a policy based on its key """
+        rc = STORE.store_delete(key=path)
+        return rc
+
+    @API.response(200, 'Success')
+    @API.response(400, 'Validation Error')
+    @API.doc(id='get_something')
+    # @API.expect()
+    def list(self):
+        """ Lists all the known stored policies """
+        rc = STORE.list_policies()
         return rc
 
 
@@ -137,6 +154,6 @@ if __name__ == '__main__':
                         format=('%(asctime)s %(name)s %(filename)s:%(lineno)s '
                                 '%(funcName)s: %(message)s')
                         )
-    LOGGER = logging.getLogger('halyard-api')
+    LOGGER = logging.getLogger(NAME)
 
     APP.run(debug=True, host="0.0.0.0", port=8001)

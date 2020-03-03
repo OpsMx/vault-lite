@@ -32,7 +32,6 @@ class PolicyStore(object):
 
     def _write_raw_policy(self, key, policy, enforcement_level, paths):
         raw_policy = {
-            "key": key,
             "policy": policy,
             "paths": paths,
             "enforcement_level": enforcement_level

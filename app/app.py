@@ -75,8 +75,7 @@ class SentinelVersion(Resource):
 
 @API.route('/v1/sys/policies/egp/<path:path>', methods=['post',
                                                         'put',
-                                                        'delete',
-                                                        'list'])
+                                                        'delete'])
 class PolicyHandling(Resource):
     @API.response(200, 'Success')
     @API.response(400, 'Validation Error')
@@ -137,6 +136,9 @@ class PolicyHandling(Resource):
         rc = STORE.store_delete(key=path)
         return rc
 
+
+@API.route('/v1/sys/policies/egp', methods=['list'])
+class PolicyList(Resource):
     @API.response(200, 'Success')
     @API.response(400, 'Validation Error')
     @API.doc(id='get_something')

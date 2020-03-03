@@ -1,0 +1,627 @@
+{
+  "param": {
+    "token": "xxx",
+    "ext_host": "http://192.168.121.1:8888/test.json"
+  },
+  "mock":
+  {
+    "spinnaker":
+    {
+      "pipeline":
+      {
+          "keepWaitingPipelines": true,
+          "pipelineConfigId": "f779bb0e-2519-44dc-8ab3-ff357822ab23",
+          "systemNotifications": [],
+          "buildTime": 1582742264743,
+          "origin": "api",
+          "trigger": {
+            "eventId": "dc286f65-eac3-4e62-b73f-82ebf407f00d",
+            "dryRun": false,
+            "payloadConstraints": {
+              "event_type": "merge_request",
+              "object_attributes": "merged",
+              "object_kind": "merge_request"
+            },
+            "rebake": false,
+            "source": "test",
+            "type": "webhook",
+            "enabled": true,
+            "payload": {
+              "event_type": "merge_request",
+              "object_attributes": {
+                "merge_when_pipeline_succeeds": false,
+                "last_commit": {
+                  "author": {
+                    "name": "Funs",
+                    "email": "fozzielumpkins@gmail.com"
+                  },
+                  "id": "0264486638b619ccc11105df69c6229cc1ecd3c7",
+                  "message": "OP-2281 Deleting feature_1\n",
+                  "title": "OP-2281 Deleting feature_1",
+                  "url": "https://gitlab.com/snuf/test/-/commit/0264486638b619ccc11105df69c6229cc1ecd3c7",
+                  "timestamp": "2020-02-26T10:37:34-08:00"
+                },
+                "iid": 99,
+                "created_at": "2020-02-26 18:37:38 UTC",
+                "description": "",
+                "source": {
+                  "path_with_namespace": "snuf/test",
+                  "ssh_url": "git@gitlab.com:snuf/test.git",
+                  "description": "A test project",
+                  "git_http_url": "https://gitlab.com/snuf/test.git",
+                  "git_ssh_url": "git@gitlab.com:snuf/test.git",
+                  "url": "git@gitlab.com:snuf/test.git",
+                  "http_url": "https://gitlab.com/snuf/test.git",
+                  "web_url": "https://gitlab.com/snuf/test",
+                  "name": "test",
+                  "namespace": "Funs",
+                  "visibility_level": 0,
+                  "default_branch": "master",
+                  "id": 16871537,
+                  "homepage": "https://gitlab.com/snuf/test"
+                },
+                "title": "OP-2281 Deleting feature_1",
+                "source_branch": "feature",
+                "updated_at": "2020-02-26 18:37:43 UTC",
+                "merge_commit_sha": "8acf32f6c0cf55d9907b710e52646fe4f206e1ec",
+                "action": "merge",
+                "id": 50956183,
+                "state_id": 3,
+                "state": "merged",
+                "assignee_id": 846548,
+                "merge_params": {
+                  "force_remove_source_branch": true
+                },
+                "work_in_progress": false,
+                "target_branch": "master",
+                "source_project_id": 16871537,
+                "url": "https://gitlab.com/snuf/test/-/merge_requests/99",
+                "target": {
+                  "path_with_namespace": "snuf/test",
+                  "ssh_url": "git@gitlab.com:snuf/test.git",
+                  "description": "A test project",
+                  "git_http_url": "https://gitlab.com/snuf/test.git",
+                  "git_ssh_url": "git@gitlab.com:snuf/test.git",
+                  "url": "git@gitlab.com:snuf/test.git",
+                  "http_url": "https://gitlab.com/snuf/test.git",
+                  "web_url": "https://gitlab.com/snuf/test",
+                  "name": "test",
+                  "namespace": "Funs",
+                  "visibility_level": 0,
+                  "default_branch": "master",
+                  "id": 16871537,
+                  "homepage": "https://gitlab.com/snuf/test"
+                },
+                "time_estimate": 0,
+                "total_time_spent": 0,
+                "merge_status": "can_be_merged",
+                "author_id": 846548,
+                "target_project_id": 16871537,
+                "assignee_ids": [
+                  846548
+                ]
+              },
+              "changes": {
+                "total_time_spent": {
+                  "current": 0
+                },
+                "updated_at": {
+                  "current": "2020-02-26 18:37:43 UTC",
+                  "previous": "2020-02-26 18:37:43 UTC"
+                },
+                "assignees": {
+                  "current": [
+                    {
+                      "avatar_url": "https://assets.gitlab-static.net/uploads/-/system/user/avatar/846548/avatar.png",
+                      "name": "Funs",
+                      "email": "fozzielumpkins@gmail.com",
+                      "username": "snuf"
+                    }
+                  ],
+                  "previous": []
+                },
+                "state_id": {
+                  "current": 3,
+                  "previous": 4
+                }
+              },
+              "project": {
+                "path_with_namespace": "snuf/test",
+                "ssh_url": "git@gitlab.com:snuf/test.git",
+                "description": "A test project",
+                "git_http_url": "https://gitlab.com/snuf/test.git",
+                "git_ssh_url": "git@gitlab.com:snuf/test.git",
+                "url": "git@gitlab.com:snuf/test.git",
+                "http_url": "https://gitlab.com/snuf/test.git",
+                "web_url": "https://gitlab.com/snuf/test",
+                "name": "test",
+                "namespace": "Funs",
+                "visibility_level": 0,
+                "default_branch": "master",
+                "id": 16871537,
+                "homepage": "https://gitlab.com/snuf/test"
+              },
+              "assignees": [
+                {
+                  "avatar_url": "https://assets.gitlab-static.net/uploads/-/system/user/avatar/846548/avatar.png",
+                  "name": "Funs",
+                  "email": "fozzielumpkins@gmail.com",
+                  "username": "snuf"
+                }
+              ],
+              "repository": {
+                "name": "test",
+                "description": "A test project",
+                "url": "git@gitlab.com:snuf/test.git",
+                "homepage": "https://gitlab.com/snuf/test"
+              },
+              "user": {
+                "avatar_url": "https://assets.gitlab-static.net/uploads/-/system/user/avatar/846548/avatar.png",
+                "name": "Funs",
+                "email": "fozzielumpkins@gmail.com",
+                "username": "snuf"
+              },
+              "object_kind": "merge_request",
+              "labels": []
+            },
+            "resolvedExpectedArtifacts": [],
+            "id": "118f732a-961a-3a97-9697-089a765d5fdd",
+            "strategy": false,
+            "user": "[anonymous]",
+            "parameters": {},
+            "notifications": [],
+            "artifacts": []
+          },
+          "type": "PIPELINE",
+          "canceled": false,
+          "limitConcurrent": true,
+          "application": "compliancepipeline",
+          "initialConfig": {},
+          "name": "Test",
+          "stages": [
+            {
+              "outputs": {},
+              "requisiteStageRefIds": [],
+              "name": "Protected Branch Check",
+              "context": {
+                "method": "POST",
+                "payload": {
+                  "keepWaitingPipelines": true,
+                  "pipelineConfigId": "f779bb0e-2519-44dc-8ab3-ff357822ab23",
+                  "systemNotifications": [],
+                  "buildTime": 1582742264743,
+                  "origin": "api",
+                  "trigger": {
+                    "eventId": "dc286f65-eac3-4e62-b73f-82ebf407f00d",
+                    "dryRun": false,
+                    "payloadConstraints": {
+                      "event_type": "merge_request",
+                      "object_attributes": "merged",
+                      "object_kind": "merge_request"
+                    },
+                    "rebake": false,
+                    "source": "test",
+                    "type": "webhook",
+                    "enabled": true,
+                    "payload": {
+                      "event_type": "merge_request",
+                      "object_attributes": {
+                        "merge_when_pipeline_succeeds": false,
+                        "last_commit": {
+                          "author": {
+                            "name": "Funs",
+                            "email": "fozzielumpkins@gmail.com"
+                          },
+                          "id": "0264486638b619ccc11105df69c6229cc1ecd3c7",
+                          "message": "OP-2281 Deleting feature_1\n",
+                          "title": "OP-2281 Deleting feature_1",
+                          "url": "https://gitlab.com/snuf/test/-/commit/0264486638b619ccc11105df69c6229cc1ecd3c7",
+                          "timestamp": "2020-02-26T10:37:34-08:00"
+                        },
+                        "iid": 99,
+                        "created_at": "2020-02-26 18:37:38 UTC",
+                        "description": "",
+                        "source": {
+                          "path_with_namespace": "snuf/test",
+                          "ssh_url": "git@gitlab.com:snuf/test.git",
+                          "description": "A test project",
+                          "git_http_url": "https://gitlab.com/snuf/test.git",
+                          "git_ssh_url": "git@gitlab.com:snuf/test.git",
+                          "url": "git@gitlab.com:snuf/test.git",
+                          "http_url": "https://gitlab.com/snuf/test.git",
+                          "web_url": "https://gitlab.com/snuf/test",
+                          "name": "test",
+                          "namespace": "Funs",
+                          "visibility_level": 0,
+                          "default_branch": "master",
+                          "id": 16871537,
+                          "homepage": "https://gitlab.com/snuf/test"
+                        },
+                        "title": "OP-2281 Deleting feature_1",
+                        "source_branch": "feature",
+                        "updated_at": "2020-02-26 18:37:43 UTC",
+                        "merge_commit_sha": "8acf32f6c0cf55d9907b710e52646fe4f206e1ec",
+                        "action": "merge",
+                        "id": 50956183,
+                        "state_id": 3,
+                        "state": "merged",
+                        "assignee_id": 846548,
+                        "merge_params": {
+                          "force_remove_source_branch": true
+                        },
+                        "work_in_progress": false,
+                        "target_branch": "master",
+                        "source_project_id": 16871537,
+                        "url": "https://gitlab.com/snuf/test/-/merge_requests/99",
+                        "target": {
+                          "path_with_namespace": "snuf/test",
+                          "ssh_url": "git@gitlab.com:snuf/test.git",
+                          "description": "A test project",
+                          "git_http_url": "https://gitlab.com/snuf/test.git",
+                          "git_ssh_url": "git@gitlab.com:snuf/test.git",
+                          "url": "git@gitlab.com:snuf/test.git",
+                          "http_url": "https://gitlab.com/snuf/test.git",
+                          "web_url": "https://gitlab.com/snuf/test",
+                          "name": "test",
+                          "namespace": "Funs",
+                          "visibility_level": 0,
+                          "default_branch": "master",
+                          "id": 16871537,
+                          "homepage": "https://gitlab.com/snuf/test"
+                        },
+                        "time_estimate": 0,
+                        "total_time_spent": 0,
+                        "merge_status": "can_be_merged",
+                        "author_id": 846548,
+                        "target_project_id": 16871537,
+                        "assignee_ids": [
+                          846548
+                        ]
+                      },
+                      "changes": {
+                        "total_time_spent": {
+                          "current": 0
+                        },
+                        "updated_at": {
+                          "current": "2020-02-26 18:37:43 UTC",
+                          "previous": "2020-02-26 18:37:43 UTC"
+                        },
+                        "assignees": {
+                          "current": [
+                            {
+                              "avatar_url": "https://assets.gitlab-static.net/uploads/-/system/user/avatar/846548/avatar.png",
+                              "name": "Funs",
+                              "email": "fozzielumpkins@gmail.com",
+                              "username": "snuf"
+                            }
+                          ],
+                          "previous": []
+                        },
+                        "state_id": {
+                          "current": 3,
+                          "previous": 4
+                        }
+                      },
+                      "project": {
+                        "path_with_namespace": "snuf/test",
+                        "ssh_url": "git@gitlab.com:snuf/test.git",
+                        "description": "A test project",
+                        "git_http_url": "https://gitlab.com/snuf/test.git",
+                        "git_ssh_url": "git@gitlab.com:snuf/test.git",
+                        "url": "git@gitlab.com:snuf/test.git",
+                        "http_url": "https://gitlab.com/snuf/test.git",
+                        "web_url": "https://gitlab.com/snuf/test",
+                        "name": "test",
+                        "namespace": "Funs",
+                        "visibility_level": 0,
+                        "default_branch": "master",
+                        "id": 16871537,
+                        "homepage": "https://gitlab.com/snuf/test"
+                      },
+                      "assignees": [
+                        {
+                          "avatar_url": "https://assets.gitlab-static.net/uploads/-/system/user/avatar/846548/avatar.png",
+                          "name": "Funs",
+                          "email": "fozzielumpkins@gmail.com",
+                          "username": "snuf"
+                        }
+                      ],
+                      "repository": {
+                        "name": "test",
+                        "description": "A test project",
+                        "url": "git@gitlab.com:snuf/test.git",
+                        "homepage": "https://gitlab.com/snuf/test"
+                      },
+                      "user": {
+                        "avatar_url": "https://assets.gitlab-static.net/uploads/-/system/user/avatar/846548/avatar.png",
+                        "name": "Funs",
+                        "email": "fozzielumpkins@gmail.com",
+                        "username": "snuf"
+                      },
+                      "object_kind": "merge_request",
+                      "labels": []
+                    },
+                    "resolvedExpectedArtifacts": [],
+                    "id": "118f732a-961a-3a97-9697-089a765d5fdd",
+                    "strategy": false,
+                    "user": "[anonymous]",
+                    "parameters": {},
+                    "notifications": [],
+                    "artifacts": []
+                  },
+                  "type": "PIPELINE",
+                  "canceled": false,
+                  "limitConcurrent": true,
+                  "application": "compliancepipeline",
+                  "initialConfig": {},
+                  "name": "Test",
+                  "stages": [
+                    "01E21CMPX524F0FTT5RRV3F3D7",
+                    {
+                      "outputs": {},
+                      "requisiteStageRefIds": [
+                        "1"
+                      ],
+                      "name": "Pick out JIRA issue",
+                      "context": {
+                        "failOnFailedExpressions": true,
+                        "requisiteStageRefIds": [
+                          "1"
+                        ],
+                        "variables": [
+                          {
+                            "value": "OP-2281",
+                            "key": "jira_issue"
+                          },
+                          {
+                            "value": "OP-2281 Deleting feature_1",
+                            "key": "jira_title"
+                          }
+                        ],
+                        "refId": "11"
+                      },
+                      "id": "01E21CMPX63P6K60STZP3X933J",
+                      "refId": "11",
+                      "type": "evaluateVariables",
+                      "tasks": [],
+                      "status": "NOT_STARTED"
+                    },
+                    {
+                      "outputs": {},
+                      "requisiteStageRefIds": [
+                        "3"
+                      ],
+                      "name": "Trigger JIRA QA Signoff",
+                      "context": {
+                        "requisiteStageRefIds": [
+                          "3"
+                        ],
+                        "statusUrlResolution": "webhookResponse",
+                        "alias": "preconfiguredWebhook",
+                        "refId": "13",
+                        "waitForCompletion": false,
+                        "parameterValues": {
+                          "targetStageID": "11",
+                          "issue": "${jira_issue}"
+                        }
+                      },
+                      "id": "01E21CMPX6FBB45Y4KD1SGN4Q7",
+                      "refId": "13",
+                      "type": "transJiraIss",
+                      "tasks": [],
+                      "status": "NOT_STARTED"
+                    },
+                    {
+                      "outputs": {},
+                      "requisiteStageRefIds": [
+                        "13",
+                        "3"
+                      ],
+                      "name": "Wait for JIRA QA Signoff",
+                      "context": {
+                        "requisiteStageRefIds": [
+                          "13",
+                          "3"
+                        ],
+                        "statusUrlResolution": "getMethod",
+                        "alias": "preconfiguredWebhook",
+                        "refId": "14",
+                        "parameterValues": {
+                          "cancel": "",
+                          "issue": "${jira_issue}",
+                          "success": "In Verification",
+                          "terminate": "PR Raised",
+                          "retry": "To Do, In Progress"
+                        },
+                        "retryStatusCodes": [
+                          200
+                        ]
+                      },
+                      "id": "01E21CMPX7VG2X856CWPWAVQV5",
+                      "refId": "14",
+                      "type": "waitJiraState",
+                      "tasks": [],
+                      "status": "NOT_STARTED"
+                    },
+                    {
+                      "outputs": {},
+                      "requisiteStageRefIds": [
+                        "14"
+                      ],
+                      "name": "JIRA: Comment on Issue",
+                      "context": {
+                        "requisiteStageRefIds": [
+                          "14"
+                        ],
+                        "statusUrlResolution": "getMethod",
+                        "alias": "preconfiguredWebhook",
+                        "refId": "15",
+                        "parameterValues": {
+                          "issue": "${jira_issue}",
+                          "message": "${jira_title}"
+                        }
+                      },
+                      "id": "01E21CMPX7PQJ1Y4TWTD97GF7J",
+                      "refId": "15",
+                      "type": "comJiraIss",
+                      "tasks": [],
+                      "status": "NOT_STARTED"
+                    },
+                    {
+                      "outputs": {},
+                      "requisiteStageRefIds": [
+                        "11"
+                      ],
+                      "name": "Compliant Pipeline Check",
+                      "context": {
+                        "requisiteStageRefIds": [
+                          "11"
+                        ],
+                        "statusUrlResolution": "getMethod",
+                        "alias": "preconfiguredWebhook",
+                        "refId": "2",
+                        "parameterValues": {
+                          "PROXY_EMPTY_TESTPATH_FAIL": "false",
+                          "OPA_PROXY": "http://opa-proxy:8000",
+                          "OPA_ENDPOINT": "http://192.168.121.63:8181",
+                          "OPA_POLICYPATH": "/v0/data/opa/pipelines/compliant_pipeline",
+                          "OPA_TESTPATH": "deny"
+                        }
+                      },
+                      "id": "01E21CMPX6KS4X4BTC0B1Q8MBV",
+                      "refId": "2",
+                      "type": "OpaWebhook",
+                      "tasks": [],
+                      "status": "NOT_STARTED"
+                    },
+                    {
+                      "outputs": {},
+                      "requisiteStageRefIds": [
+                        "2"
+                      ],
+                      "name": "Automated QA",
+                      "context": {
+                        "waitBeforeMonitor": "2",
+                        "terminalStatuses": "failed",
+                        "method": "GET",
+                        "canceledStatuses": "failed",
+                        "statusUrlResolution": "webhookResponse",
+                        "waitForCompletion": true,
+                        "url": "http://192.168.121.1:9998/trigger_qa?branch=master&project_id=16871537&commit_id=0264486638b619ccc11105df69c6229cc1ecd3c7",
+                        "requisiteStageRefIds": [
+                          "2"
+                        ],
+                        "successStatuses": "done",
+                        "statusUrlJsonPath": "$.qaStatus.url",
+                        "refId": "3",
+                        "customHeaders": {},
+                        "statusJsonPath": "qa_state"
+                      },
+                      "id": "01E21CMPX6TR6QQY41XJMZWTK8",
+                      "refId": "3",
+                      "type": "webhook",
+                      "tasks": [],
+                      "status": "NOT_STARTED"
+                    },
+                    {
+                      "outputs": {},
+                      "requisiteStageRefIds": [
+                        "14",
+                        "15"
+                      ],
+                      "name": "Deploy Pipeline",
+                      "context": {
+                        "pipeline": "29480f74-3d54-4747-9a31-d2dc727167e1",
+                        "requisiteStageRefIds": [
+                          "14",
+                          "15"
+                        ],
+                        "application": "testapp",
+                        "failPipeline": true,
+                        "refId": "7",
+                        "waitForCompletion": true
+                      },
+                      "id": "01E21CMPX608MPWTB2WZRX69Y5",
+                      "refId": "7",
+                      "type": "pipeline",
+                      "tasks": [],
+                      "status": "NOT_STARTED"
+                    }
+                  ],
+                  "startTime": 1582742265475,
+                  "id": "01E21CMPWYM0NQ33XZ2JGG9FN2",
+                  "notifications": [],
+                  "status": "RUNNING",
+                  "authentication": {
+                    "allowedAccounts": [
+                      "spinnaker-service-account",
+                      "dockerhub"
+                    ]
+                  }
+                },
+                "statusUrlResolution": "getMethod",
+                "alias": "preconfiguredWebhook",
+                "url": "http://opa-proxy:8000/v0/data/opa/pipelines/remote/validate_gitlab_trigger",
+                "customHeaders": {
+                  "PROXY_EMPTY_TESTPATH_FAIL": [
+                    "false"
+                  ],
+                  "OPA_ENDPOINT": [
+                    "http://192.168.121.63:8181"
+                  ],
+                  "OPA_TESTPATH": [
+                    "deny"
+                  ],
+                  "Content-Type": [
+                    "application/json"
+                  ]
+                },
+                "parameterValues": {
+                  "PROXY_EMPTY_TESTPATH_FAIL": "false",
+                  "OPA_PROXY": "http://opa-proxy:8000",
+                  "OPA_ENDPOINT": "http://192.168.121.63:8181",
+                  "OPA_POLICYPATH": "/v0/data/opa/pipelines/remote/validate_gitlab_trigger",
+                  "OPA_TESTPATH": "deny"
+                }
+              },
+              "startTime": 1582742265667,
+              "id": "01E21CMPX524F0FTT5RRV3F3D7",
+              "refId": "1",
+              "type": "OpaWebhook",
+              "tasks": [
+                {
+                  "stageStart": true,
+                  "loopStart": false,
+                  "stageEnd": true,
+                  "name": "createWebhook",
+                  "startTime": 1582742265890,
+                  "id": "1",
+                  "loopEnd": false,
+                  "implementingClass": "com.netflix.spinnaker.orca.webhook.tasks.CreateWebhookTask",
+                  "status": "RUNNING"
+                }
+              ],
+              "status": "RUNNING"
+            },
+            "01E21CMPX63P6K60STZP3X933J",
+            "01E21CMPX6FBB45Y4KD1SGN4Q7",
+            "01E21CMPX7VG2X856CWPWAVQV5",
+            "01E21CMPX7PQJ1Y4TWTD97GF7J",
+            "01E21CMPX6KS4X4BTC0B1Q8MBV",
+            "01E21CMPX6TR6QQY41XJMZWTK8",
+            "01E21CMPX608MPWTB2WZRX69Y5"
+          ],
+          "startTime": 1582742265475,
+          "id": "01E21CMPWYM0NQ33XZ2JGG9FN2",
+          "notifications": [],
+          "status": "RUNNING",
+          "authentication": {
+            "allowedAccounts": [
+              "spinnaker-service-account",
+              "dockerhub"
+            ]
+          }
+      }
+    }
+  }
+}

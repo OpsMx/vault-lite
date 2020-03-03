@@ -1,0 +1,59 @@
+import "spinnaker"
+import "http"
+import "json"
+
+param token
+param ext_host
+
+# req = http.request(ext_host).with_header("Authorization", "token "+token)
+# resp = json.unmarshal(http.get(req).body)
+# print(resp)
+
+get_pipeline_element = func(element) {
+	if length(spinnaker.module_paths else []) > 0 { # always true in the real tfplan import
+		return get_pipeline_all_modules(element)
+	} else { # fallback for tests
+		return get_pipeline_element_from_root(element)
+	}
+}
+
+get_pipeline_element_from_root = func(type) {
+	element = false
+	element = spinnaker.pipeline[type] else {}
+	return element
+}
+
+get_stages = func(stage) {
+		print(stage)
+}
+
+get_resources_all_modules = func(type) {
+	resources = []
+	for tfplan.module_paths as path {
+		named_and_counted_resources = spinnaker.module(path).pipelines[type] else {}
+		# Get resource bodies out of nested resource maps, from:
+		# {"name": {"0": {"applied": {...}, "diff": {...} }, "1": {...}}, "name": {...}}
+		# to:
+		# [{"applied": {...}, "diff": {...}}, {"applied": {...}, "diff": {...}}, ...]
+		for named_and_counted_resources as _, instances {
+			for instances as _, body {
+				append(resources, body)
+			}
+		}
+	}
+	return resources
+}
+
+# disect the pipeline elements to traverse over, however the API integration needs to
+# happen in some way. How to provision this crap?
+has_wait_for_pipelines = rule { get_pipeline_element("keepWaitingPipelines") == true }
+api_is_call_origin = rule { get_pipeline_element("origin") == "api" }
+is_limited_concurrent = rule { get_pipeline_element("origin") == "api" }
+is_key_true = rule { resp["some_key"] is true }
+
+main = rule {
+	has_wait_for_pipelines and
+	api_is_call_origin and
+	is_limited_concurrent
+	# is_key_true
+}

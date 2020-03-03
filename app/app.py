@@ -14,8 +14,8 @@ from flask_restplus import Resource, Api, fields
 from libs import Sentinel
 
 VERSION = "0.1"
-NAME = "setninel-api"
-NAME_LABEL = "Simple Sentinel API"
+NAME = "vault-lite-api"
+NAME_LABEL = "Vault-lite"
 TITLE = "Swaggering ", NAME_LABEL
 POLICY_DIR = "../policy"
 TEMP_DIR = "/tmp"
@@ -96,6 +96,22 @@ EXECUTION = API.model('PipeLineExecutionContext', {
                             default="RUNNING",
                             required=True)
 })
+POLICY = API.model('VaultPolicy', {
+    'policy': fields.String(description=""" base64 encoded policy """,
+                            required=True),
+    'paths': fields.List(fields.String,
+                         desciprion=""" IGNORED, Vault paths this policy
+                                    applies to """,
+                         default="secrets/spinnaker/*",
+                         required=True),
+    'enforcement_level': fields.String(desciprion=""" IGNORED, Vault
+                                                  enforcement level either
+                                                  hard-mandatory,
+                                                  soft-mandatory
+                                                  or advisory.  """,
+                                       default="hard-mandatory",
+                                       required=True),
+})
 @API.route('/v1/sys/policies/egp/<path:path>', methods=['post', 'put'])
 @API.doc(params={"payload": "${ execution }"})
 class QuerySentinelDocument(Resource):
@@ -103,6 +119,7 @@ class QuerySentinelDocument(Resource):
     @API.response(400, 'Validation Error')
     @API.expect(EXECUTION)
     def post(self, path):
+        """ Evaluates the data posted against the policy path queried """
         LOGGER.debug("Validation, received URL: %s", request.path)
         LOGGER.debug("Payload: %s", request.json)
         # sanitize JSON?,
@@ -126,11 +143,24 @@ class QuerySentinelDocument(Resource):
 
     @API.response(200, 'Success')
     @API.response(400, 'Validation Error')
-    #    @API.expect(EXECUTION)
+    @API.expect(POLICY)
     # https://learn.hashicorp.com/vault/identity-access-management/iam-sentinel
     # check for base64 encoding, decode, store as KV..
     def put(self, path):
-        LOGGER.debug("putting policies in this way...")
+        """ Inserts a base64 encoded policy at the given EGP on path basis """
+        # LOGGER.debug("auth?: %s" % request.headers)
+        # Default vault PUT
+        if request.mimetype == "application/x-www-form-urlencoded":
+            # stream.read first, otherwise data is interpreted
+            data = json.loads(request.stream.read())
+        elif request.mimetype == "application/json":
+            LOGGER.warning("Vault by default does't do json PUTs")
+            data = json.loads(request.data)
+        else:
+            LOGGER.error("Unhandled mimetype: %s" % (request.mimetype))
+            return {}
+        LOGGER.debug(data)
+        LOGGER.debug("putting policies in this way...: %s" % path)
 
 
 if __name__ == '__main__':

@@ -19,7 +19,7 @@ PAYLOAD=".payload.json"
 
 for policy in `ls -1 *.sentinel`; do
   EGP=$( echo $policy | awk -F\. '{ print $1 }')
-  POLICY=$(base64 ${FILE})
+  POLICY=$(base64 ${policy})
   tee ${PAYLOAD} <<EOF
   {
     "policy": "${POLICY}",
@@ -32,5 +32,5 @@ EOF
          --request PUT \
          --data @${PAYLOAD} \
          ${ENDPOINT}/v1/sys/policies/egp/${EGP}
-  rm ${PAYLOAD}
+  # rm ${PAYLOAD}
 done

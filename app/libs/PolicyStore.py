@@ -81,7 +81,7 @@ class PolicyStore(object):
 
     # this should become a read stream at some point...
     def get_policy(self, key=None):
-        return open(self.get_policy_location(key=key)).readlines()
+        return "".join(open(self.get_policy_location(key=key)).readlines())
 
     # list all existing policies, raw policies...?
     def list_policies(self):

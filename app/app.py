@@ -73,16 +73,95 @@ class SentinelVersion(Resource):
         return _return(data=Sent.sentinel_version())
 
 
-@API.route('/v1/sys/policies/egp/<path:path>', methods=['post',
-                                                        'put',
-                                                        'delete'])
+# Fullfill path?
+@API.route('/v1/sys/policies/egp/<path:path>', methods=['put',
+                                                        'delete',
+                                                        'list',
+                                                        'get'])
 class PolicyHandling(Resource):
+    @API.response(200, 'Success')
+    @API.response(400, 'Validation Error')
+    @API.expect(MODELS.POLICY())
+    # https://learn.hashicorp.com/vault/identity-access-management/iam-sentinel
+    # check for base64 encoding, decode, store as KV..
+    def put(self, path):
+        """ Inserts a base64 encoded policy at the given EGP on path basis """
+        # LOGGER.debug("auth?: %s" % request.headers)
+        if request.mimetype == "application/x-www-form-urlencoded":
+            # stream.read first, otherwise data is interpreted
+            data = json.loads(request.stream.read())
+        elif request.mimetype == "application/json":
+            LOGGER.warning("Vault by default doesn't do json PUTs")
+        else:
+            # vault client uses no mimetype...
+            LOGGER.error("Unhandled mimetype: %s" % (request.mimetype))
+            data = json.loads(request.data)
+        rc = STORE.store_policy(key=path,
+                                paths=data['paths'],
+                                enforcement_level=data['enforcement_level'],
+                                policy=data['policy'])
+        return {"data": "%s" % rc}
+
+    @API.response(200, 'Success')
+    @API.response(400, 'Validation Error')
+    @API.expect()
+    def delete(self, path):
+        """ Remove a policy based on its key """
+        rc = STORE.store_delete(key=path)
+        return rc
+
+    def list(self):
+        """ Lists all known stored policy definitions """
+        LOGGER.debug(request.headers)
+        rc = STORE.list_policies()
+        return rc
+
+    def get(self, path):
+        """ Get a specific policy definition """
+        if path:
+            rc = STORE.get_policy(path)
+        else:
+            rc = STORE.list_policies()
+        # LOGGER.debug("path: %s, %s" % (path, rc))
+        return rc
+
+
+# X-Vault-Request:
+@API.route('/v1/sys/policies/egp', methods=['list', 'get'])
+class PolicySimpleList(Resource):
+    @API.response(200, 'Success')
+    @API.response(400, 'Validation Error')
+    @API.doc(id='get_something')
+    # @API.expect()
+    def list(self):
+        """ Lists all known stored policy definitions  """
+        rc = STORE.list_policies()
+        return rc
+
+    def get(self):
+        """ Lists all known stored policy definitions  """
+        rc = STORE.list_policies()
+        LOGGER.debug(request.headers)
+        return rc
+
+
+# Fullfill path?
+@API.route('/v1/kv-v2/<path:path>', methods=['put', 'post'])
+class PolicyVerification(Resource):
+    @API.response(200, 'Success')
+    @API.response(400, 'Validation Error')
+    @API.doc(id='get_something')
+    # @API.expect()
+    def put(self, path):
+        """ Evaluates the data PUT against the policy path queried """
+        LOGGER.debug(request)
+
     @API.response(200, 'Success')
     @API.response(400, 'Validation Error')
     @API.expect(MODELS.EXECUTION())
     @API.doc(params={"payload": "${ execution }"})
     def post(self, path):
-        """ Evaluates the data posted against the policy path queried """
+        """ Evaluates the data POSTed against the policy path queried """
         LOGGER.debug("Validation, received URL: %s", request.path)
         LOGGER.debug("Payload: %s", request.json)
         # sanitize JSON?,
@@ -104,49 +183,6 @@ class PolicyHandling(Resource):
                                       policy=policy_path)
             os.unlink(SPL.name)
         return _return(data=res, fail_code=400)
-
-    @API.response(200, 'Success')
-    @API.response(400, 'Validation Error')
-    @API.expect(MODELS.POLICY())
-    # https://learn.hashicorp.com/vault/identity-access-management/iam-sentinel
-    # check for base64 encoding, decode, store as KV..
-    def put(self, path):
-        """ Inserts a base64 encoded policy at the given EGP on path basis """
-        # LOGGER.debug("auth?: %s" % request.headers)
-        if request.mimetype == "application/x-www-form-urlencoded":
-            # stream.read first, otherwise data is interpreted
-            data = json.loads(request.stream.read())
-        elif request.mimetype == "application/json":
-            LOGGER.warning("Vault by default doesn't do json PUTs")
-            data = json.loads(request.data)
-        else:
-            LOGGER.error("Unhandled mimetype: %s" % (request.mimetype))
-            return {}
-        rc = STORE.store_policy(key=path,
-                                paths=data['paths'],
-                                enforcement_level=data['enforcement_level'],
-                                policy=data['policy'])
-        return rc
-
-    @API.response(200, 'Success')
-    @API.response(400, 'Validation Error')
-    @API.expect()
-    def delete(self, path):
-        """ Remove a policy based on its key """
-        rc = STORE.store_delete(key=path)
-        return rc
-
-
-@API.route('/v1/sys/policies/egp', methods=['list'])
-class PolicyList(Resource):
-    @API.response(200, 'Success')
-    @API.response(400, 'Validation Error')
-    @API.doc(id='get_something')
-    # @API.expect()
-    def list(self):
-        """ Lists all the known stored policies """
-        rc = STORE.list_policies()
-        return rc
 
 
 if __name__ == '__main__':

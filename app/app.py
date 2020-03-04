@@ -212,20 +212,19 @@ class PolicyVerification(Resource):
     def post(self, path):
         """ Evaluates the data POSTed against the policy path queried """
         vpath = request.path.split('/', 2)[-1]
-        if request.json is None:
-            LOGGER.error("Missing body in request...")
-            return 400
-        # spool file...
-        SPL = tempfile.NamedTemporaryFile(delete=False,
-                                          prefix=NAME_LABEL)
-        SPL.write(json.dumps(request.json).encode('utf-8'))
-        # figure out policy from path,
-        #  point at policy directory
         policy_paths = STORE.get_policies_by_path(path=vpath)
-        res = Sent.sentinel_apply(config=SPL.name,
-                                  policies=policy_paths)
-        if not DEBUG:
-            os.unlink(SPL.name)
+        if policy_paths:
+            data = get_data_on_mime(request)
+            SPL = tempfile.NamedTemporaryFile(delete=False,
+                                              prefix=NAME_LABEL)
+            SPL.write(json.dumps(data).encode('utf-8'))
+            res = Sent.sentinel_apply(config=SPL.name,
+                                      policies=policy_paths)
+
+            if not DEBUG:
+                os.unlink(SPL.name)
+        else:
+            LOGGER.warning("No policies found for path: %s" % vpath)
         return _return(data=res, fail_code=400)
 
 

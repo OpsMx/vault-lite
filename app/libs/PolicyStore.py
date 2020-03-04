@@ -10,8 +10,8 @@ import json
 import base64
 import glob
 import time
-LOGGER = logging.getLogger(__name__)
 MASK = 0o700
+LOGGER = logging.getLogger(__name__)
 
 
 class PolicyStore(object):

@@ -5,11 +5,13 @@ implementation and testing of Policies with Sentinel as one would do through
 enterprise Vault. It by no means implements any of the other enforcement
 components vault does.
 
-First off testing is done with HTTP calls, and later the Vault client (Not implemented now)
-HTTP Calls:
+TODO: Fix name globbing pickup of policies...
 
 Supports no namespaces
 Supports no secrets
+
+First off testing is done with HTTP calls, and later the Vault client (Not implemented now)
+HTTP Calls:
 
 Using Vault:
 0) go get github.com/hashicorp/vault/api

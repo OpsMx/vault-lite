@@ -10,7 +10,7 @@ NOTES:
 import re
 # import json
 import time
-from subprocess import check_output
+from subprocess import check_output, CalledProcessError
 import logging
 LOGGER = logging.getLogger(__name__)
 
@@ -33,9 +33,9 @@ class Sentinel(object):
             state = "Pass"
         while input:
             line = input.pop(0)
-            if re.match('(\s+)?(TRUE|ERROR)', line):
+            if re.match('(\s+)?(TRUE|FALSE)', line):
                 _trace = True
-                LOGGER.trace("A-Z: %s" % line)
+                # LOGGER.debug("A-Z: %s" % line)
             if _trace:
                 if re.match('\t', line):
                     trace[-1] = "%s %s" % (trace[-1], line.replace('\t', ''))
@@ -88,8 +88,14 @@ class Sentinel(object):
             rv = {"result": rc,
                   "time": time.time() - start,
                   "data": output}
-            LOGGER.debug(rv)
             return rv
+        except CalledProcessError as e:
+            LOGGER.warning("Evaluation failed: %s" % e)
+            result = e.output.decode('utf-8').split("\n")
+            output = self.sanitize_output(input=result)
+            return {"result": False,
+                    "time": time.time() - start,
+                    "msg": output}
         except Exception as e:
             LOGGER.error("Exception caught: %s" % e)
             return {"result": False,

@@ -48,7 +48,7 @@ class PolicyStore(object):
             "ctime": time.time()
         }
         try:
-            path = "%s.%s" % (self.get_policy_location(key=key),
+            path = "%s.%s" % (self._get_policy_location(key=key),
                               self.raw_extension)
             with open(path, 'w') as outfile:
                 json.dump(raw_policy, outfile)
@@ -60,7 +60,7 @@ class PolicyStore(object):
     def _write_simplified_policy(self,
                                  key,
                                  policy):
-        path = self.get_policy_location(key=key)
+        path = self._get_policy_location(key=key)
         try:
             # check if exists deny overrwire, and ask for update??
             f = open(path, 'w+b')
@@ -75,14 +75,20 @@ class PolicyStore(object):
         # if not os.path.exists(self.policy_path):
         return self._create_paths()
 
+    def __pather(self, key, path):
+        if path in self.paths and key not in self.paths[path]:
+            self.paths[path].append(key)
+        else:
+            self.paths[path] = [key]
+
     def _add_paths(self,
                    key,
                    paths):
-        for path in paths:
-            if path in self.paths and key not in self.paths[path]:
-                self.paths[path].append(key)
-            else:
-                self.paths[path] = [key]
+        if isinstance(paths, list):
+            for path in paths:
+                self.__pather(key, path)
+        else:
+            self.__pather(key, paths)
         self._write_paths()
         return self.paths
 
@@ -134,7 +140,7 @@ class PolicyStore(object):
         if key is None:
             return self.get_policies_by_path(path=path)
         if path is None:
-            p = "".join(open(self.get_policy_location(key=key)).readlines())
+            p = "".join(open(self._get_policy_location(key=key)).readlines())
             return [p]
         return []
 

@@ -124,7 +124,7 @@ class PolicyStorage(Resource):
     def get(self, path):
         """ Get a specific policy definition """
         if path:
-            rc = STORE.get_policy(path)
+            rc = STORE.get_policies_by_key(key=path)
         else:
             rc = STORE.list_policies()
         # LOGGER.debug("path: %s, %s" % (path, rc))

@@ -3,4 +3,6 @@
 POLICY="pipeline_verification"
 INPUT="execution_context.input"
 
-curl --request POST ${VAULT_ENDPOINT}/v1/kv-v2/spinnaker/pipelines
+. .env
+
+curl --request POST ${VAULT_ADDR}/v1/kv-v2/spinnaker/pipelines

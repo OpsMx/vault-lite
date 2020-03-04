@@ -16,6 +16,8 @@ PATHS="kv-v2/spinnaker/pipelines"
 TOKEN="my-secret-vault-token"
 PAYLOAD=".payload.json"
 
+. .env
+
 for policy in `ls -1 *.sentinel`; do
   EGP=$( echo $policy | awk -F\. '{ print $1 }')
   POLICY=$(base64 ${policy})
@@ -30,6 +32,6 @@ EOF
   curl --header "X-Vault-Token: ${TOKEN}" \
          --request PUT \
          --data @${PAYLOAD} \
-         ${VAULT_ENDPOINT}/v1/sys/policies/egp/${EGP}
+         ${VAULT_ADDR}/v1/sys/policies/egp/${EGP}
   # rm ${PAYLOAD}
 done

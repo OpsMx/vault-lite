@@ -1,2 +1,6 @@
-. env
-curl --request LIST ${VAULT_ENDPOINT}/v1/sys/policies/egp 
+#!/usr/bin/env bash
+#
+
+. .env
+
+curl --request LIST ${VAULT_ADDR}/v1/sys/policies/egp

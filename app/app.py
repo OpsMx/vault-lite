@@ -48,6 +48,19 @@ def _return(data={},  fail_code=400):
     return data, fail_code
 
 
+def get_data_on_mime(request):
+    if request.mimetype == "application/x-www-form-urlencoded":
+        # stream.read first, otherwise data is interpreted
+        data = json.loads(request.stream.read())
+    elif request.mimetype == "application/json":
+        LOGGER.warning("Vault by default doesn't do json PUTs")
+    else:
+        # vault client uses no mimetype...
+        LOGGER.error("Unhandled mimetype: %s" % (request.mimetype))
+        data = json.loads(request.data)
+    return data
+
+
 @API.route('/v1/health', methods=['GET'])
 class Health(Resource):
     @API.response(200, 'Success')
@@ -78,7 +91,7 @@ class SentinelVersion(Resource):
                                                         'delete',
                                                         'list',
                                                         'get'])
-class PolicyHandling(Resource):
+class PolicyStorage(Resource):
     @API.response(200, 'Success')
     @API.response(400, 'Validation Error')
     @API.expect(MODELS.POLICY())
@@ -87,15 +100,7 @@ class PolicyHandling(Resource):
     def put(self, path):
         """ Inserts a base64 encoded policy at the given EGP on path basis """
         # LOGGER.debug("auth?: %s" % request.headers)
-        if request.mimetype == "application/x-www-form-urlencoded":
-            # stream.read first, otherwise data is interpreted
-            data = json.loads(request.stream.read())
-        elif request.mimetype == "application/json":
-            LOGGER.warning("Vault by default doesn't do json PUTs")
-        else:
-            # vault client uses no mimetype...
-            LOGGER.error("Unhandled mimetype: %s" % (request.mimetype))
-            data = json.loads(request.data)
+        data = get_data_on_mime(request)
         rc = STORE.store_policy(key=path,
                                 paths=data['paths'],
                                 enforcement_level=data['enforcement_level'],
@@ -145,6 +150,47 @@ class PolicySimpleList(Resource):
         return rc
 
 
+@API.route('/v1/secret/<path:path>', methods=['put',
+                                              'post',
+                                              'get',
+                                              'delete',
+                                              'list'])
+class Secrets(Resource):
+    @API.response(200, 'Success')
+    @API.response(400, 'Validation Error')
+    def put(self):
+        """ Not implemented """
+        pass
+
+    def post(self):
+        """ Not implemented """
+        pass
+
+    def get(self):
+        """ Not implemented """
+        pass
+
+    def delete(self):
+        """ Not implemented """
+        pass
+
+    def list(self):
+        """ Not implemented """
+        pass
+
+
+@API.route('/v1/sys/internal/ui/mounts/<path:path>', methods=['get'])
+class SysInternalUiMounts(Resource):
+    @API.response(200, 'Success')
+    @API.response(400, 'Validation Error')
+    def get(self, path):
+        """ Mock this routine that gets called by vault.
+            info:
+            https://www.vaultproject.io/api-docs/system/internal-ui-mounts/
+        """
+        LOGGER.info("Received mount call to: %s" % path)
+        return {}
+
 # Fullfill path?
 # Here we need to save retrieve the policy based on the path
 # and evaluate against the policy based on the paths given with the policy
@@ -157,7 +203,7 @@ class PolicyVerification(Resource):
     # @API.expect()
     def put(self, path):
         """ Evaluates the data PUT against the policy path queried """
-        LOGGER.debug(request)
+        self.post(path)
 
     @API.response(200, 'Success')
     @API.response(400, 'Validation Error')
@@ -192,4 +238,4 @@ if __name__ == '__main__':
                         )
     LOGGER = logging.getLogger(NAME)
 
-    APP.run(debug=True, host="0.0.0.0", port=8001)
+    APP.run(debug=True, host="0.0.0.0", port=8200)

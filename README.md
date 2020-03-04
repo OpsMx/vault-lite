@@ -8,6 +8,8 @@ components vault does.
 First off testing is done with HTTP calls, and later the Vault client (Not implemented now)
 HTTP Calls:
 
+Supports no namespaces
+Supports no secrets
 
 Using Vault:
 0) go get github.com/hashicorp/vault/api

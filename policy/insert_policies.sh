@@ -14,7 +14,6 @@ LEVEL="hard-mandatory"
 # We don't care about the path yet, should be used though for uniqueness
 PATHS="kv-v2/spinnaker/pipelines"
 TOKEN="my-secret-vault-token"
-ENDPOINT="http://127.0.0.1:8001"
 PAYLOAD=".payload.json"
 
 for policy in `ls -1 *.sentinel`; do
@@ -31,6 +30,6 @@ EOF
   curl --header "X-Vault-Token: ${TOKEN}" \
          --request PUT \
          --data @${PAYLOAD} \
-         ${ENDPOINT}/v1/sys/policies/egp/${EGP}
+         ${VAULT_ENDPOINT}/v1/sys/policies/egp/${EGP}
   # rm ${PAYLOAD}
 done

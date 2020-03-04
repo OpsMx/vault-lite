@@ -1,1 +1,2 @@
-curl --request LIST http://127.0.0.1:8001/v1/sys/policies/egp 
+. env
+curl --request LIST ${VAULT_ENDPOINT}/v1/sys/policies/egp 

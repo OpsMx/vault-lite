@@ -22,7 +22,8 @@ class Sentinel(object):
         self.trace = trace
 
     # make output look somewhat look like usable
-    def sanitize_output(self, input=input):
+    def sanitize_output(self,
+                        input=input):
         state = "Fail"
         _trace = False
         trace = []
@@ -50,7 +51,27 @@ class Sentinel(object):
     # -config <file> policy.sentinel
     # -param
     # -trace
-    def sentinel_apply(self, config=False, param=False, policy=False):
+    def sentinel_apply(self,
+                       config=False,
+                       param=False,
+                       policy=False,
+                       policies=False):
+        rc = {}
+        if policies:
+            for policy in policies:
+                rc[policy] = self._sentinel_apply(config=config,
+                                                  param=param,
+                                                  policy=policy)
+        elif policy:
+            rc[policy] = self._sentinel_apply(config=config,
+                                              param=param,
+                                              policy=policy)
+        return rc
+
+    def _sentinel_apply(self,
+                        config=False,
+                        param=False,
+                        policy=False):
         start = time.time()
         try:
             if not config or not policy:

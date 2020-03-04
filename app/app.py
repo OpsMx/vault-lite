@@ -112,7 +112,7 @@ class PolicyHandling(Resource):
 
     def list(self):
         """ Lists all known stored policy definitions """
-        LOGGER.debug(request.headers)
+        # LOGGER.debug(request.headers)
         rc = STORE.list_policies()
         return rc
 
@@ -146,7 +146,10 @@ class PolicySimpleList(Resource):
 
 
 # Fullfill path?
-@API.route('/v1/kv-v2/<path:path>', methods=['put', 'post'])
+# Here we need to save retrieve the policy based on the path
+# and evaluate against the policy based on the paths given with the policy
+#
+@API.route('/v1/<path:path>', methods=['put', 'post'])
 class PolicyVerification(Resource):
     @API.response(200, 'Success')
     @API.response(400, 'Validation Error')
@@ -162,25 +165,20 @@ class PolicyVerification(Resource):
     @API.doc(params={"payload": "${ execution }"})
     def post(self, path):
         """ Evaluates the data POSTed against the policy path queried """
-        LOGGER.debug("Validation, received URL: %s", request.path)
-        LOGGER.debug("Payload: %s", request.json)
-        # sanitize JSON?,
-        # should also LOGGER camp?
+        vpath = request.path.split('/', 2)[-1]
+        if request.json is None:
+            LOGGER.error("Missing body in request...")
+            return 400
+        # spool file...
         SPL = tempfile.NamedTemporaryFile(delete=False,
                                           prefix=NAME_LABEL)
         SPL.write(json.dumps(request.json).encode('utf-8'))
         # figure out policy from path,
         #  point at policy directory
-        if DEBUG:
-            path = "/home/vagrant/policy-proxy/examples/sentinel/examples"
-            config = "%s/test/pipeline_verification/pass.json" % (path)
-            policy = "%s/pipeline_verification.sentinel" % (path)
-            res = Sent.sentinel_apply(config=config,
-                                      policy=policy)
-        else:
-            policy_path = STORE.get_policy_location(key=path)
-            res = Sent.sentinel_apply(config=SPL.name,
-                                      policy=policy_path)
+        policy_paths = STORE.get_policies_by_path(path=vpath)
+        res = Sent.sentinel_apply(config=SPL.name,
+                                  policies=policy_paths)
+        if not DEBUG:
             os.unlink(SPL.name)
         return _return(data=res, fail_code=400)
 

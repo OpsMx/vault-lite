@@ -12,7 +12,7 @@ FILE="time.sentinel"
 # We are only this, norhing else yet.
 LEVEL="hard-mandatory"
 # We don't care about the path yet, should be used though for uniqueness
-PATHS="secrets/spinnaker/*"
+PATHS="kv-v2/spinnaker/pipelines"
 TOKEN="my-secret-vault-token"
 ENDPOINT="http://127.0.0.1:8001"
 PAYLOAD=".payload.json"

@@ -42,7 +42,7 @@ STORE = PolicyStore.PolicyStore(location=POLICY_DIR)
 
 
 def _return(data={},  fail_code=400,  code=200):
-    LOGGER.debug("fail_code: %s, data: %s", fail_code, data)
+    LOGGER.debug("code: %s, fail_code: %s, data: %s", code, fail_code, data)
     status = 400
     if 'result' in data and data['result'] is False:
         status = fail_code
@@ -62,18 +62,32 @@ def _return(data={},  fail_code=400,  code=200):
     return Response(output, status=status)
 
 
+def is_json(data):
+    try:
+        data = json.loads(data)
+        return True
+    except json.decoder.JSONDecodeError as e:
+        LOGGER.error("Unable to parse JSON, not JSON?: %s" % e)
+    return False
+
+
+# clean error returning..
 def get_data_on_mime(request):
     if request.mimetype == "application/x-www-form-urlencoded":
         # stream.read first, otherwise data is interpreted
-        data = json.loads(request.stream.read())
+        read = request.stream.read()
+        if is_json(read):
+            return json.loads(read)
+        return {"error": "Input is not JSON"}
     elif request.mimetype == "application/json":
         LOGGER.warning("Vault by default doesn't do json PUTs")
     elif request.mimetype == "" and request.headers.get("X-Vault-Request"):
-        data = json.loads(request.data)
-    else:
-        LOGGER.debug("No request with a mime type from a source I understand")
-        data = {}
-    return data
+        if is_json(request.data):
+            return json.loads(request.data)
+        return {"error": "Input is not JSON"}
+    msg = """ No request with a mime type from a source I understand """
+    LOGGER.error(msg)
+    return {"error": msg}
 
 
 # Parse in params later

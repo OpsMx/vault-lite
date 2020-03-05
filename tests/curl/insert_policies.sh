@@ -13,11 +13,13 @@ LEVEL="hard-mandatory"
 PATHS="kv-v2/spinnaker/pipelines"
 TOKEN="my-secret-vault-token"
 PAYLOAD=".payload.json"
+POLICIES="../policies"
 
-. .env
+. $(git rev-parse --show-toplevel)/tests/.env
 
-for policy in `ls -1 *.sentinel`; do
-  EGP=$( echo $policy | awk -F\. '{ print $1 }')
+for policy in `ls -1 ${POLICIES}/*.sentinel`; do
+  filename=${policy##*/}
+  EGP=$( echo $filename| awk -F\. '{ print $1 }')
   POLICY=$(base64 ${policy})
   tee ${PAYLOAD} <<EOF
   {
@@ -26,7 +28,6 @@ for policy in `ls -1 *.sentinel`; do
     "enforcement_level": "${LEVEL}"
   }
 EOF
-
   curl --header "X-Vault-Token: ${TOKEN}" \
          --request PUT \
          --data @${PAYLOAD} \

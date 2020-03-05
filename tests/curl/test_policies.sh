@@ -4,9 +4,9 @@ POLICY="spinnaker/pipelines"
 POLICY="pipelines/pipeline_verification"
 POLICY="spinnaker/pipelines/pipeline_verification"
 
-INPUT="execution_context.input"
+INPUT="../inputs/execution_context.input"
 
-. .env
+. $(git rev-parse --show-toplevel)/tests/.env
 
 curl --request POST \
     --data @${INPUT} \

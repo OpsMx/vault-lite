@@ -46,19 +46,17 @@ def _return(data={},  fail_code=400,  code=200):
     status = 400
     if 'result' in data and data['result'] is False:
         status = fail_code
+        # Non Vault output gets nice this way, not the other..
+        # output = data
+        # When vault we should probably parse...
+        output = json.dumps(data, sort_keys=True, indent=4)
+        return output, status
     elif 'result' in data and data['result'] is True:
         status = code
-    if data:
-        # LOGGER.info(data)
-        # if request.headers.get("X-Vault-Request"):
-        #    output = json.dumps(data['data'][0],
-        #                        sort_keys=True,
-        #                        indent=4,
-        #                        separators=(',', ': '))
-        # else:
         output = json.dumps({"data": data['data'][0]})
     else:
-        output = {"msg": "No data"}
+        output = json.dumps({"msg": "No data"})
+    # return output, status
     return Response(output, status=status)
 
 
@@ -168,6 +166,7 @@ class PolicyStorage(Resource):
             rc = STORE.get_policies_by_key(key=path)
         else:
             rc = STORE.list_policies()
+            LOGGER.debug(rc)
         data = {
             "data": {
                 "key": rc
@@ -191,7 +190,13 @@ class PolicySimpleList(Resource):
     def get(self):
         """ Lists all known stored policy definitions  """
         rc = STORE.list_policies()
-        return rc
+        LOGGER.debug(rc)
+        data = {
+            "data": {
+                "key": rc
+            }
+        }
+        return data, 200
 
 
 @API.route('/v1/secret/<path:path>', methods=['put',

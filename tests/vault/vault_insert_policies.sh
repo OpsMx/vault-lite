@@ -17,8 +17,7 @@ POLICY_BAD="${POLICY_INPUTS_DIR}/fail.input"
 
 export VAULT_ADDR
 POLICY=$(base64 ${POLICY_FILE})
-writePolicy=$(vault write sys/policies/egp/${POLICY_KEY} \
+vault write sys/policies/egp/${POLICY_KEY} \
   	policy="${POLICY}" \
   	paths="${POLICY_PATHS}" \
-  	enforcement_level="${POLICY_LEVEL}")
-echo "wr: $writePolicy"
+  	enforcement_level="${POLICY_LEVEL}"

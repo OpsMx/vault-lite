@@ -16,5 +16,4 @@ POLICY_BAD="${POLICY_INPUTS_DIR}/fail.input"
 . $(git rev-parse --show-toplevel)/tests/.env
 
 export VAULT_ADDR
-failPolicy=$(vault kv put ${POLICY_PATHS} @${POLICY_BAD})
-echo $failPolicy
+vault kv put ${POLICY_PATHS} @${POLICY_BAD}

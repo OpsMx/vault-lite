@@ -16,5 +16,8 @@ POLICY_BAD="${POLICY_INPUTS_DIR}/fail.input"
 . $(git rev-parse --show-toplevel)/tests/.env
 
 export VAULT_ADDR
-readPolicy=$(vault read sys/policies/egp/${POLICY_KEY})
+readPolicy=$(vault read sys/policies/egp)
 echo "rd: $reacPolicy"
+
+vault read sys/policies/egp/${POLICY_KEY}
+

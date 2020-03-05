@@ -7,6 +7,7 @@ POLICY_KEY=pipeline_verification
 POLICY_FILE=${POLICY_KEY}.sentinel
 POLICY_LEVEL=hard-mandatory
 POLICY_PATHS="kv-v2/pipelines/${POLICY_KEY}"
+POLICY_PATHS="kv-v2/spinnaker/pipelines/${POLICY_KEY}"
 POLICY_GOOD=""
 POLICY_BAD=""
 
@@ -22,6 +23,8 @@ POLICY=$(base64 ${POLICY_FILE})
 # readPolicy=$(vault read sys/policies/egp/${POLICY_KEY})
 # echo "rd: $reacPolicy"
 successPolicy=$(vault kv put ${POLICY_PATHS} @execution_context.input)
+# failPolicy=$(vault kv put ${POLICY_PATHS} @fail.input)
+
 echo "sp: $successPolicy"
 # failPolicy=$(vault kv put ${POLICY_PATHS} fail=me)
 # echo "fp: $failPolicy"

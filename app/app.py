@@ -49,11 +49,14 @@ def _return(data={},  fail_code=400,  code=200):
     elif 'result' in data and data['result'] is True:
         status = code
     if data:
-        LOGGER.info(data)
-        output = json.dumps(data['data'],
-                            sort_keys=True,
-                            indent=4,
-                            separators=(',', ': '))
+        # LOGGER.info(data)
+        # if request.headers.get("X-Vault-Request"):
+        #    output = json.dumps(data['data'][0],
+        #                        sort_keys=True,
+        #                        indent=4,
+        #                        separators=(',', ': '))
+        # else:
+        output = json.dumps({"data": data['data'][0]})
     else:
         output = {"msg": "No data"}
     return Response(output, status=status)

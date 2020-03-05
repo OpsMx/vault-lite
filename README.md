@@ -6,6 +6,11 @@ enterprise Vault. It by no means implements any of the other enforcement
 components vault does.
 
 TODO:
+  * Fix ok return code on policy Validation
+  * Fix input format, now we're sending in the full Mock
+    should be split in context, and then build the mock based
+    on params + context..
+
   Fix name globbing pickup of policies...
   Fix logging
   Returning of data https://learn.hashicorp.com/vault/getting-started/first-secret

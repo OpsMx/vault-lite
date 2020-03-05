@@ -9,7 +9,7 @@ import os
 import json
 import tempfile
 import logging
-from flask import Flask, request
+from flask import Flask, request, Response
 from flask_cors import CORS
 from flask_restplus import Resource, Api
 from libs import Sentinel
@@ -33,9 +33,9 @@ API = Api(APP,
           default=NAME,
           default_label=NAME_LABEL)
 
-DEBUG = False
-TRACE = False
-APP.config["DEBUG"] = False
+DEBUG = True
+TRACE = True
+APP.config["DEBUG"] = DEBUG
 Sent = Sentinel.Sentinel(trace=TRACE)
 MODELS = Models.Models(API=API)
 STORE = PolicyStore.PolicyStore(location=POLICY_DIR)
@@ -43,11 +43,17 @@ STORE = PolicyStore.PolicyStore(location=POLICY_DIR)
 
 def _return(data={},  fail_code=400,  code=200):
     LOGGER.debug("fail_code: %s, data: %s", fail_code, data)
+    status = 400
     if 'result' in data and data['result'] is False:
-        return data, 400
+        status = fail_code
     elif 'result' in data and data['result'] is True:
-        return data, code
-    return data, fail_code
+        status = code
+    LOGGER.info(data)
+    output = json.dumps(data['data'],
+                        sort_keys=True,
+                        indent=4,
+                        separators=(',', ': '))
+    return Response(output, status=status)
 
 
 def get_data_on_mime(request):
@@ -215,7 +221,7 @@ class PolicyVerification(Resource):
     # @API.expect()
     def put(self, path):
         """ Evaluates the data PUT against the policy path queried """
-        self.post(path)
+        return self.post(path)
 
     @API.response(200, 'Success')
     @API.response(400, 'Validation Error')
@@ -230,14 +236,14 @@ class PolicyVerification(Resource):
             SPL = tempfile.NamedTemporaryFile(delete=False,
                                               prefix=NAME_LABEL)
             SPL.write(json.dumps(data).encode('utf-8'))
-            state, res = Sent.sentinel_apply(config=SPL.name,
-                                             policies=policy_paths)
+            res = Sent.sentinel_apply(config=SPL.name,
+                                      policies=policy_paths)
 
-            # if not DEBUG:
-            #    os.unlink(SPL.name)
+            if not DEBUG:
+                os.unlink(SPL.name)
         else:
             LOGGER.error("No policies found for path: %s" % vpath)
-        return _return(data=res, fail_code=400)
+        return _return(data=res)
 
 
 if __name__ == '__main__':

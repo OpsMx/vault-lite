@@ -57,25 +57,26 @@ class Sentinel(object):
                        param=False,
                        policy=False,
                        policies=False):
-        rc = {}
+        rc = []
         if policies:
             for policy in policies:
-                rc[policy] = self._sentinel_apply(config=config,
-                                                  param=param,
-                                                  policy=policy)
+                rc.append(self._sentinel_apply(config=config,
+                                               param=param,
+                                               policy=policy))
         elif policy:
-            rc[policy] = self._sentinel_apply(config=config,
-                                              param=param,
-                                              policy=policy)
-        # can fail stuff catch should go here
-        state = "Pass"
-        LOGGER.info(rc)
-        #for p in rc:
-        #    LOGGER.info(p)
-        # sys.exit(1)
-        #    if  != "Pass":
-        #        state = "Fail"
-        return state, rc
+            rc.append(self._sentinel_apply(config=config,
+                                           param=param,
+                                           policy=policy))
+        #
+        # Should evaluate the policy enforcement_level
+        #   hard-mandatory: Fail break it
+        #   soft-mandatory: ?
+        #   other:          Doesn't matter
+        result = True
+        r = any(p['result'] is False for p in rc)
+        if r:
+            result = False
+        return {"result": result, "data": rc}
 
     def _sentinel_apply(self,
                         config=False,
@@ -95,23 +96,21 @@ class Sentinel(object):
                 rc = False
             else:
                 rc = True
-            rv = {"result": rc,
-                  "time": time.time() - start,
-                  "data": output}
-            LOGGER.debug("Sentinel Result: %s", rv)
-            return rv
+            output['time'] = time.time() - start
+            output['result'] = rc
+            return output
         except CalledProcessError as e:
             LOGGER.warning("Evaluation failed: %s" % e)
             result = e.output.decode('utf-8').split("\n")
             output = self.sanitize_output(input=result)
-            return {"result": False,
-                    "time": time.time() - start,
-                    "msg": output}
+            output['time'] = time.time() - start
+            output['result'] = False
+            return output
         except Exception as e:
             LOGGER.error("Exception caught: %s" % e)
             return {"result": False,
                     "time": time.time() - start,
-                    "msg": "I can't do that Dave: %s" % e}
+                    "data": "I can't do that Dave: %s" % e}
 
     # -write=true, write to file, not stdout
     # -check=false, check formatting

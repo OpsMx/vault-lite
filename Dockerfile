@@ -11,4 +11,4 @@ WORKDIR /app
 RUN pip install -r requirements.txt
 EXPOSE 8200
 
-CMD ["python", "app.py"]
+CMD ["python", "vault-lite.py"]

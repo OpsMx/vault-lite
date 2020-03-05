@@ -12,10 +12,11 @@ Supports no namespaces. No notion of namespaces, url namespaces can be used
 but are not honored in any way.
 
 TODO:
+  * Review insertion of policies, seems like paths are not updated correctly
   * add globbing of policies, now only direct match is allowed now
     - ok now: kv-v2/spinnaker/pipelines/my_policy
     - not ok now: kv-v2/spinnaker/pipelines/*
-
+    - however: kv-v2/spinnaker/pipeline is ok, instead of a regex..
   * transform error output to strings, for niceness
   * transform trace, and comment arrays to nice strings..
     https://learn.hashicorp.com/vault/getting-started/first-secret

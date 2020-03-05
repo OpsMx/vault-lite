@@ -8,6 +8,7 @@ NOTES:
 """
 # import shlex
 import re
+import sys
 # import json
 import time
 from subprocess import check_output, CalledProcessError
@@ -66,7 +67,15 @@ class Sentinel(object):
             rc[policy] = self._sentinel_apply(config=config,
                                               param=param,
                                               policy=policy)
-        return rc
+        # can fail stuff catch should go here
+        state = "Pass"
+        LOGGER.info(rc)
+        #for p in rc:
+        #    LOGGER.info(p)
+        # sys.exit(1)
+        #    if  != "Pass":
+        #        state = "Fail"
+        return state, rc
 
     def _sentinel_apply(self,
                         config=False,
@@ -79,6 +88,7 @@ class Sentinel(object):
             cmd = ["sentinel", "apply", "-config", config, policy]
             if self.trace:
                 cmd.insert(2, "-trace")
+            LOGGER.debug("Sentinel CMD: %s" % cmd)
             result = check_output(cmd).decode('utf-8').split("\n")
             output = self.sanitize_output(input=result)
             if output["state"] != "Pass":
@@ -88,6 +98,7 @@ class Sentinel(object):
             rv = {"result": rc,
                   "time": time.time() - start,
                   "data": output}
+            LOGGER.debug("Sentinel Result: %s", rv)
             return rv
         except CalledProcessError as e:
             LOGGER.warning("Evaluation failed: %s" % e)

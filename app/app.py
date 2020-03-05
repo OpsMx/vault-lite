@@ -8,6 +8,7 @@ import sys
 import os
 import json
 import tempfile
+import logging
 from flask import Flask, request
 from flask_cors import CORS
 from flask_restplus import Resource, Api
@@ -32,19 +33,20 @@ API = Api(APP,
           default=NAME,
           default_label=NAME_LABEL)
 
-DEBUG = True
-APP.config["DEBUG"] = DEBUG
-Sent = Sentinel.Sentinel(trace=DEBUG)
+DEBUG = False
+TRACE = False
+APP.config["DEBUG"] = False
+Sent = Sentinel.Sentinel(trace=TRACE)
 MODELS = Models.Models(API=API)
 STORE = PolicyStore.PolicyStore(location=POLICY_DIR)
 
 
-def _return(data={},  fail_code=400):
+def _return(data={},  fail_code=400,  code=200):
     LOGGER.debug("fail_code: %s, data: %s", fail_code, data)
     if 'result' in data and data['result'] is False:
-        return data, fail_code
+        return data, 400
     elif 'result' in data and data['result'] is True:
-        return data, 200
+        return data, code
     return data, fail_code
 
 
@@ -54,10 +56,11 @@ def get_data_on_mime(request):
         data = json.loads(request.stream.read())
     elif request.mimetype == "application/json":
         LOGGER.warning("Vault by default doesn't do json PUTs")
-    else:
-        # vault client uses no mimetype...
-        LOGGER.error("Unhandled mimetype: %s" % (request.mimetype))
+    elif request.mimetype == "" and request.headers.get("X-Vault-Request"):
         data = json.loads(request.data)
+    else:
+        LOGGER.debug("No request with a mime type from a source I understand")
+        data = {}
     return data
 
 
@@ -105,7 +108,13 @@ class PolicyStorage(Resource):
                                 paths=data['paths'],
                                 enforcement_level=data['enforcement_level'],
                                 policy=data['policy'])
-        return {"data": "%s" % rc}
+        LOGGER.debug("rc: %s" % rc)
+        data = {
+            'data': {
+                'res': rc
+            }
+        }
+        return data
 
     @API.response(200, 'Success')
     @API.response(400, 'Validation Error')
@@ -122,13 +131,17 @@ class PolicyStorage(Resource):
         return rc
 
     def get(self, path):
-        """ Get a specific policy definition """
+        """ Get a specific policy definition, NOT RAW """
         if path:
             rc = STORE.get_policies_by_key(key=path)
         else:
             rc = STORE.list_policies()
-        # LOGGER.debug("path: %s, %s" % (path, rc))
-        return rc
+        data = {
+            "data": {
+                "key": rc
+            }
+        }
+        return data
 
 
 # X-Vault-Request:
@@ -146,7 +159,6 @@ class PolicySimpleList(Resource):
     def get(self):
         """ Lists all known stored policy definitions  """
         rc = STORE.list_policies()
-        LOGGER.debug(request.headers)
         return rc
 
 
@@ -218,13 +230,13 @@ class PolicyVerification(Resource):
             SPL = tempfile.NamedTemporaryFile(delete=False,
                                               prefix=NAME_LABEL)
             SPL.write(json.dumps(data).encode('utf-8'))
-            res = Sent.sentinel_apply(config=SPL.name,
-                                      policies=policy_paths)
+            state, res = Sent.sentinel_apply(config=SPL.name,
+                                             policies=policy_paths)
 
-            if not DEBUG:
-                os.unlink(SPL.name)
+            # if not DEBUG:
+            #    os.unlink(SPL.name)
         else:
-            LOGGER.warning("No policies found for path: %s" % vpath)
+            LOGGER.error("No policies found for path: %s" % vpath)
         return _return(data=res, fail_code=400)
 
 

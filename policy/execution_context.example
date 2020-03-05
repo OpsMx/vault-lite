@@ -1,8 +1,14 @@
 {
-  "spinnaker":
+  "param": {
+    "token": "xxx",
+    "ext_host": "http://192.168.121.1:8888/test.json"
+  },
+  "mock":
   {
-    "pipeline":
+    "spinnaker":
     {
+      "pipeline":
+      {
           "keepWaitingPipelines": true,
           "pipelineConfigId": "f779bb0e-2519-44dc-8ab3-ff357822ab23",
           "systemNotifications": [],
@@ -615,6 +621,7 @@
               "dockerhub"
             ]
           }
-        }
+      }
     }
+  }
 }

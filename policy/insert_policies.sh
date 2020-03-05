@@ -7,8 +7,6 @@
 # b) for demoing sentinel integration
 #
 
-# Sample policy to push
-FILE="time.sentinel"
 # We are only this, norhing else yet.
 LEVEL="hard-mandatory"
 # We don't care about the path yet, should be used though for uniqueness
@@ -24,7 +22,7 @@ for policy in `ls -1 *.sentinel`; do
   tee ${PAYLOAD} <<EOF
   {
     "policy": "${POLICY}",
-    "paths": ["${PATHS}"],
+    "paths": ["${PATHS}", "${PATHS}/${EGP}"],
     "enforcement_level": "${LEVEL}"
   }
 EOF

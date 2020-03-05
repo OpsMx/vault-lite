@@ -48,11 +48,14 @@ def _return(data={},  fail_code=400,  code=200):
         status = fail_code
     elif 'result' in data and data['result'] is True:
         status = code
-    LOGGER.info(data)
-    output = json.dumps(data['data'],
-                        sort_keys=True,
-                        indent=4,
-                        separators=(',', ': '))
+    if data:
+        LOGGER.info(data)
+        output = json.dumps(data['data'],
+                            sort_keys=True,
+                            indent=4,
+                            separators=(',', ': '))
+    else:
+        output = {"msg": "No data"}
     return Response(output, status=status)
 
 
@@ -68,6 +71,12 @@ def get_data_on_mime(request):
         LOGGER.debug("No request with a mime type from a source I understand")
         data = {}
     return data
+
+
+# Parse in params later
+def prep_sentinel_data(data, params=None):
+    ndata = {"mock": data}
+    return ndata
 
 
 @API.route('/v1/health', methods=['GET'])
@@ -232,7 +241,7 @@ class PolicyVerification(Resource):
         vpath = request.path.split('/', 2)[-1]
         policy_paths = STORE.get_policies_by_path(path=vpath)
         if policy_paths:
-            data = get_data_on_mime(request)
+            data = prep_sentinel_data(get_data_on_mime(request))
             SPL = tempfile.NamedTemporaryFile(delete=False,
                                               prefix=NAME_LABEL)
             SPL.write(json.dumps(data).encode('utf-8'))
@@ -241,9 +250,11 @@ class PolicyVerification(Resource):
 
             if not DEBUG:
                 os.unlink(SPL.name)
+            return _return(data=res)
         else:
-            LOGGER.error("No policies found for path: %s" % vpath)
-        return _return(data=res)
+            msg = "No policies found for path: %s" % vpath
+            LOGGER.error(msg)
+        return _return()
 
 
 if __name__ == '__main__':

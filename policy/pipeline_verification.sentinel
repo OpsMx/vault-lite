@@ -2,8 +2,8 @@ import "spinnaker"
 import "http"
 import "json"
 
-param token
-param ext_host
+# param token
+# param ext_host
 
 # req = http.request(ext_host).with_header("Authorization", "token "+token)
 # resp = json.unmarshal(http.get(req).body)

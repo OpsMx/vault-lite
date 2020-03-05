@@ -1,10 +1,4 @@
 {
-  "param": {
-    "token": "xxx",
-    "ext_host": "http://192.168.121.1:8888/test.json"
-  },
-  "mock":
-  {
     "spinnaker":
     {
       "pipeline":
@@ -623,5 +617,4 @@
           }
       }
     }
-  }
 }

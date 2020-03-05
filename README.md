@@ -6,10 +6,12 @@ enterprise Vault. It by no means implements any of the other enforcement
 components vault does.
 
 TODO:
-  * Fix ok return code on policy Validation
+  * Fix ok return code on policy Validation Ok
   * Fix input format, now we're sending in the full Mock
     should be split in context, and then build the mock based
     on params + context..
+    1) Initially just build the context / mock builder
+    2) Build the params insertion
 
   Fix name globbing pickup of policies...
   Fix logging

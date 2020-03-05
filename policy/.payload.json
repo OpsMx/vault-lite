@@ -3,6 +3,6 @@
 dXRlCnByaW50KCJjdXJyZW50IHRpbWUgaXMiLCBob3VyLCBtaW51dGUpCgpwYXN0X21pZG5pZ2h0
 ID0gcnVsZSB7IGhvdXIgPj0gMCB9CmJlZm9yZV9ub29uID0gcnVsZSB7IGhvdXIgPCAxMiB9Cgpt
 YWluID0gcnVsZSB7CglwYXN0X21pZG5pZ2h0IGFuZAoJYmVmb3JlX25vb24KfQo=",
-    "paths": ["kv-v2/spinnaker/pipelines"],
+    "paths": ["kv-v2/spinnaker/pipelines", "kv-v2/spinnaker/pipelines/time"],
     "enforcement_level": "hard-mandatory"
   }

@@ -13,6 +13,11 @@ but are not honored in any way.
 
 TODO:
   * Review insertion of policies, seems like paths are not updated correctly
+  * move policy saving to tmp space in the container
+  * disable debugging to save space and remove temporary stuff
+  * use default vault and build in sentinel as a backend...
+    - downside is the whole consul circus is required
+    - this should be doable with the sdk, or as a builtin
   * add globbing of policies, now only direct match is allowed now
     - ok now: kv-v2/spinnaker/pipelines/my_policy
     - not ok now: kv-v2/spinnaker/pipelines/*

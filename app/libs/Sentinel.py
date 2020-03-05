@@ -8,7 +8,6 @@ NOTES:
 """
 # import shlex
 import re
-import sys
 # import json
 import time
 from subprocess import check_output, CalledProcessError

@@ -149,7 +149,7 @@ class PolicyStorage(Resource):
     @API.expect()
     def delete(self, path):
         """ Remove a policy based on its key """
-        rc = STORE.store_delete(key=path)
+        rc = STORE.delete_policy_on_key(key=path)
         return rc
 
     """ surplus """
@@ -240,7 +240,7 @@ class SysInternalUiMounts(Resource):
 # Fullfill path?
 # Here we need to save retrieve the policy based on the path
 # and evaluate against the policy based on the paths given with the policy
-#
+# - We don't do anything else for now....
 @API.route('/v1/<path:path>', methods=['put', 'post'])
 class PolicyVerification(Resource):
     @API.response(200, 'Success')

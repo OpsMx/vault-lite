@@ -40,19 +40,22 @@ class PolicyStore(object):
                           policy,
                           enforcement_level,
                           paths):
+        # versioning should become part of the metadata store
         raw_policy = {
             "key": key,
             "policy": policy,
             "paths": paths,
             "enforcement_level": enforcement_level,
-            "ctime": time.time()
+            "ctime": time.time(),
+            "enabled": True,
+            "version": 1
         }
         try:
             path = "%s.%s" % (self._get_policy_location(key=key),
                               self.raw_extension)
             with open(path, 'w') as outfile:
                 json.dump(raw_policy, outfile)
-            return True
+            return raw_policy
         except Exception as e:
             LOGGER.error("Unable to save raw policy %s: %s" % (path, e))
         return False
@@ -123,15 +126,18 @@ class PolicyStore(object):
         results = {}
         self._checkdir_create(self.location)
         if self.raw_save:
-            results['raw_save'] = self._write_raw_policy(key,
-                                                         policy,
-                                                         enforcement_level,
-                                                         paths)
+            results = self._write_raw_policy(key,
+                                             policy,
+                                             enforcement_level,
+                                             paths)
         data = base64.b64decode(policy)
         results['simplified_save'] = self._write_simplified_policy(key, data)
-        self._add_paths(key, paths)
+        # self._add_paths(key, paths)
         results['time'] = time.time()
         results['key'] = key
+        results['version'] = 1
+        results['enabled'] = True
+        self._reload_paths()
         return results
 
     def _get_policy_location(self,
@@ -146,8 +152,15 @@ class PolicyStore(object):
             return self.get_policies_by_path(path=path)
         if path is None:
             p = "".join(open(self._get_policy_location(key=key)).readlines())
-            return [p]
-        return []
+            return p
+        return ""
+
+    def _get_raw_policy_by_key(self,
+                               key=None):
+        pfile = "%s.%s" % (self._get_policy_location(key=key),
+                           self.raw_extension)
+        p = "".join(open(pfile).readlines())
+        return p
 
     # should move from more to less specific
     def get_policies_by_path(self,
@@ -169,11 +182,32 @@ class PolicyStore(object):
                 pl.append(json.load(policy))
         return pl
 
-    def delete_policy(self,
-                      key=None,
-                      paths=None,
-                      policy=None):
-        return False
+    # deletion should be a metadata party, not a data party...
+    # if we'd expand on thise
+    def delete_policy_on_key(self,
+                             key=None):
+        rm = []
+        for path in self.paths:
+            if key in self.paths[path]:
+                self.paths[path].remove(key)
+                pfile = self._get_policy_location(key)
+                rawfile = "%s.%s" % (pfile, self.raw_extension)
+                if os.path.exists(pfile):
+                    os.rename(pfile, "%s.%s" % (pfile, "disable"))
+                if os.path.exists(rawfile):
+                    os.rename(rawfile, "%s.%s" % (rawfile, "disable"))
+            if not self.paths[path]:
+                rm.append(path)
+        for path in rm:
+            self.paths.pop(path)
+        return self._create_paths()
+
+    def delete_policies_on_path(self,
+                                path=None):
+        if path in self.paths:
+            for key in self.paths[path]:
+                self.delete_policy_on_key(key=key)
+        return self._create_paths()
 
     def check_policy(self,
                      key=None,

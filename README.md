@@ -16,8 +16,8 @@ TODO:
     - ok now: kv-v2/spinnaker/pipelines/my_policy
     - not ok now: kv-v2/spinnaker/pipelines/*
 
-  * make output more synonymous with Vault, although the return code is
-    most important
+  * transform error output to strings, for niceness
+  * transform trace, and comment arrays to nice strings..
     https://learn.hashicorp.com/vault/getting-started/first-secret
     https://github.com/hashicorp/vault/blob/master/api/secret.go
   * Implement param insertion for policy. Now we don't support params.

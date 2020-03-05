@@ -120,14 +120,19 @@ class PolicyStore(object):
                      paths=None):
         if key is None or policy is None:
             raise Exception("Missing key or policy")
+        results = {}
         self._checkdir_create(self.location)
         if self.raw_save:
-            self._write_raw_policy(key, policy, enforcement_level, paths)
+            results['raw_save'] = self._write_raw_policy(key,
+                                                         policy,
+                                                         enforcement_level,
+                                                         paths)
         data = base64.b64decode(policy)
-        rc = self._write_simplified_policy(key, data)
-        if rc:
-            self._add_paths(key, paths)
-        return rc
+        results['simplified_save'] = self._write_simplified_policy(key, data)
+        self._add_paths(key, paths)
+        results['time'] = time.time()
+        results['key'] = key
+        return results
 
     def _get_policy_location(self,
                              key=None):

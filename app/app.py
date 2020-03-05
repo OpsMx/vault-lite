@@ -46,7 +46,7 @@ def _return(data={},  fail_code=400,  code=200):
     status = 400
     if 'result' in data and data['result'] is False:
         status = fail_code
-        # Non Vault output gets nice this way, not the other..
+        # Non Vault output gets nice this
         # output = data
         # When vault we should probably parse...
         output = json.dumps(data, sort_keys=True, indent=4)
@@ -140,9 +140,7 @@ class PolicyStorage(Resource):
                                 policy=data['policy'])
         LOGGER.debug("rc: %s" % rc)
         data = {
-            'data': {
-                'res': rc
-            }
+            'data': rc
         }
         return data
 
@@ -154,6 +152,7 @@ class PolicyStorage(Resource):
         rc = STORE.store_delete(key=path)
         return rc
 
+    """ surplus """
     def list(self):
         """ Lists all known stored policy definitions """
         # LOGGER.debug(request.headers)
@@ -169,7 +168,7 @@ class PolicyStorage(Resource):
             LOGGER.debug(rc)
         data = {
             "data": {
-                "key": rc
+                path: rc
             }
         }
         return data
@@ -183,20 +182,18 @@ class PolicySimpleList(Resource):
     @API.doc(id='get_something')
     # @API.expect()
     def list(self):
-        """ Lists all known stored policy definitions  """
-        rc = STORE.list_policies()
-        return rc
+        return self.get()
 
     def get(self):
+        data = {}
         """ Lists all known stored policy definitions  """
         rc = STORE.list_policies()
         LOGGER.debug(rc)
-        data = {
-            "data": {
-                "key": rc
-            }
-        }
-        return data, 200
+        # needs to improve tough....
+        for p in rc:
+            LOGGER.debug("xx %s" % p)
+            data[p['key']] = p
+        return {"data": data}, 200
 
 
 @API.route('/v1/secret/<path:path>', methods=['put',

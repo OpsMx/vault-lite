@@ -1,0 +1,38 @@
+# hal deploy apply --service-names orca
+#
+# Setting fixed customHeaders and starting the policy-proxy with fixed
+# values can be used to fixate policy enforcement
+#
+webhook:
+  preconfigured:
+  - label: Vault-Sentinel Policy Stage
+    type: VaultSentinelPolicyStage
+    enabled: true
+    description: Spinnaker Policy Evaluation and Decision Stage that integrates with HashiCorp Enterprise Vault policies based on Sentinel
+    method: POST
+    customHeaders:
+      AUTH_BEARER:
+        - "${paremeterValues['VAULT_TOKEN']}"
+    url: ${parameterValues['VAULT_ADDR']}${parameterValues['POLICY_PATH']}
+    payload: ${execution}
+    parameters:
+    - label: Policy Path
+      name: POLICY_PATH
+      description: The path to the Policy that applies to this stage
+      defaultValue: "/v1/kv-v2/<yourpolicy import location>"
+      type: string
+    - label: Auth Bearer Token for the Policy Engine
+      name: VAULT_TOKEN
+      description: Vault's authentication token
+      defaultValue: ""
+      type: string
+    - label: Vault Address
+      name: VAULT_ADDR
+      description: Vault''s address
+      type: string
+      defaultValue: ""
+    - label: Vault Module Enabled
+      name: VAULT_MODULE
+      description: Enabling the proxy Vault Module when we submit our request
+      type: string
+      defaultValue: "True"

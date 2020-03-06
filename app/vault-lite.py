@@ -55,7 +55,7 @@ def _return(data={},  fail_code=400,  code=200):
         status = code
         output = json.dumps({"data": data['data'][0]})
     else:
-        output = json.dumps({"msg": "No data"})
+        output = json.dumps({"msg": data})
     # return output, status
     return Response(output, status=status)
 
@@ -79,13 +79,13 @@ def get_data_on_mime(request):
         return {"error": "Input is not JSON"}
     elif request.mimetype == "application/json":
         LOGGER.warning("Vault by default doesn't do json PUTs")
-    elif request.mimetype == "" and request.headers.get("X-Vault-Request"):
+    #  and request.headers.get("X-Vault-Request")
+    # elif request.mimetype == ""
+    else:
         if is_json(request.data):
             return json.loads(request.data)
+        LOGGER.warning("Invalid input; %s" % request.data)
         return {"error": "Input is not JSON"}
-    msg = """ No request with a mime type from a source I understand """
-    LOGGER.error(msg)
-    return {"error": msg}
 
 
 # Parse in params later
@@ -260,13 +260,16 @@ class PolicyVerification(Resource):
         vpath = request.path.split('/', 2)[-1]
         policy_paths = STORE.get_policies_by_path(path=vpath)
         if policy_paths:
-            data = prep_sentinel_data(get_data_on_mime(request))
-            SPL = tempfile.NamedTemporaryFile(delete=False,
-                                              prefix=NAME_LABEL)
-            SPL.write(json.dumps(data).encode('utf-8'))
-            res = Sent.sentinel_apply(config=SPL.name,
-                                      policies=policy_paths)
-
+            rdata = get_data_on_mime(request)
+            if "error" not in rdata:
+                data = prep_sentinel_data(rdata)
+                SPL = tempfile.NamedTemporaryFile(delete=False,
+                                                  prefix=NAME_LABEL)
+                SPL.write(json.dumps(data).encode('utf-8'))
+                res = Sent.sentinel_apply(config=SPL.name,
+                                          policies=policy_paths)
+            else:
+                res = rdata
             if not DEBUG:
                 os.unlink(SPL.name)
             return _return(data=res)

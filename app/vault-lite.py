@@ -78,9 +78,7 @@ def get_data_on_mime(request):
             return json.loads(read)
         return {"error": "Input is not JSON"}
     elif request.mimetype == "application/json":
-        LOGGER.warning("Vault by default doesn't do json PUTs")
-    #  and request.headers.get("X-Vault-Request")
-    # elif request.mimetype == ""
+        LOGGER.warning("Vault by default doesn't do json")
     else:
         if is_json(request.data):
             return json.loads(request.data)

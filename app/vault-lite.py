@@ -49,8 +49,7 @@ def _return(data={},  fail_code=400,  code=200):
         # Non Vault output gets nice this
         # output = data
         # When vault we should probably parse...
-        output = json.dumps(data, sort_keys=True, indent=4)
-        return output, status
+        return json.dumps(data), status
     elif 'result' in data and data['result'] is True:
         status = code
         output = json.dumps({"data": data['data'][0]})
@@ -264,6 +263,7 @@ class PolicyVerification(Resource):
                 SPL = tempfile.NamedTemporaryFile(delete=False,
                                                   prefix=NAME_LABEL)
                 SPL.write(json.dumps(data).encode('utf-8'))
+                SPL.close()
                 res = Sent.sentinel_apply(config=SPL.name,
                                           policies=policy_paths)
             else:

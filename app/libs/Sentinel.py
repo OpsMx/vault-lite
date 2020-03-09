@@ -8,9 +8,9 @@ NOTES:
 """
 # import shlex
 import re
-# import json
 import time
 from subprocess import check_output, CalledProcessError
+import subprocess
 import logging
 LOGGER = logging.getLogger(__name__)
 
@@ -44,7 +44,7 @@ class Sentinel(object):
             else:
                 if line != "":
                     comment.append(line)
-
+        # LOGGER.debug("RET: %s, %s, %s" % (state, trace, comment))
         return {"state": state, "trace:": trace, "comment": comment}
 
     # We only use this for now...
@@ -86,11 +86,16 @@ class Sentinel(object):
             if not config or not policy:
                 raise ValueError("Expecting a config and a policy, got none")
             cmd = ["sentinel", "apply", "-config", config, policy]
+            # LOGGER.debug(cmd)
             if self.trace:
                 cmd.insert(2, "-trace")
-            LOGGER.debug("Sentinel CMD: %s" % cmd)
-            result = check_output(cmd).decode('utf-8').split("\n")
-            output = self.sanitize_output(input=result)
+            with subprocess.Popen(cmd,
+                                  universal_newlines=True,
+                                  stdout=subprocess.PIPE,
+                                  stderr=subprocess.PIPE) as proc:
+                output, errors = proc.communicate()
+            # LOGGER.debug("%s, %s" % (output, errors))
+            output = self.sanitize_output(input=output.split('\n'))
             if output["state"] != "Pass":
                 rc = False
             else:
@@ -98,9 +103,10 @@ class Sentinel(object):
             output['time'] = time.time() - start
             output['result'] = rc
             return output
-        except CalledProcessError as e:
-            LOGGER.warning("Evaluation failed: %s" % e)
-            result = e.output.decode('utf-8').split("\n")
+        except CalledProcessError as c:
+            LOGGER.error("Evaluation failed: %s" % c.output)
+            result = c.output
+            #.decode('utf-8').split("\n")
             output = self.sanitize_output(input=result)
             output['time'] = time.time() - start
             output['result'] = False

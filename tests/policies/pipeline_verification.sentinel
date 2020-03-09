@@ -46,7 +46,7 @@ get_resources_all_modules = func(type) {
 
 # disect the pipeline elements to traverse over, however the API integration needs to
 # happen in some way. How to provision this crap?
-has_wait_for_pipelines = rule { get_pipeline_element("keepWaitingPipelines") == true }
+has_wait_for_pipelines = rule { get_pipeline_element("keepWaitingPipelines") == false }
 api_is_call_origin = rule { get_pipeline_element("origin") == "api" }
 is_limited_concurrent = rule { get_pipeline_element("origin") == "api" }
 is_key_true = rule { resp["some_key"] is true }

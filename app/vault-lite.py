@@ -20,7 +20,7 @@ VERSION = "0.1"
 NAME = "vault-lite-api"
 NAME_LABEL = "Vault-lite"
 TITLE = "Swaggering ", NAME_LABEL
-POLICY_DIR = "vault-lite/policies"
+POLICY_DIR = "vault-lite-store/policies"
 TEMP_DIR = "/tmp"
 
 APP = Flask(__name__)

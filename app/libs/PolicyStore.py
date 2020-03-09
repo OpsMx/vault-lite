@@ -17,7 +17,7 @@ LOGGER = logging.getLogger(__name__)
 class PolicyStore(object):
     """ Class that handles policies """
     def __init__(self,
-                 location="vault-lite/policies",
+                 location="vault-lite-store/policies",
                  raw_extension="raw",
                  default_extension="sentinel",
                  raw_save=True,

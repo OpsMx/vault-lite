@@ -4,6 +4,7 @@
 set -e
 
 POLICY_KEY=pipeline_verification
+POLICY_KEY=dateTimeSlotWhenOpsIsThere
 POLICY_DIR="../policies"
 POLICY_FILE=${POLICY_DIR}/${POLICY_KEY}.sentinel
 POLICY_LEVEL=hard-mandatory

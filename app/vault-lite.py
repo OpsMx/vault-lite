@@ -33,8 +33,8 @@ API = Api(APP,
           default=NAME,
           default_label=NAME_LABEL)
 
-DEBUG = True
-TRACE = True
+DEBUG = False
+TRACE = False
 APP.config["DEBUG"] = DEBUG
 Sent = Sentinel.Sentinel(trace=TRACE)
 MODELS = Models.Models(API=API)

@@ -4,10 +4,10 @@ hour = time.now.hour
 minute = time.now.minute
 print("current time is", hour, minute)
 
-past_midnight = rule { hour >= 0 }
-before_noon = rule { hour < 12 }
+after_office_hours = rule { hour >= 17 }
+before_office_hours = rule { hour < 9 }
 
 main = rule {
-	past_midnight and
-	before_noon
+	not after_office_hours and
+	not before_office_hours
 }

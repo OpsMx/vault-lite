@@ -94,15 +94,22 @@ class Sentinel(object):
                                   stdout=subprocess.PIPE,
                                   stderr=subprocess.PIPE) as proc:
                 output, errors = proc.communicate()
-            # LOGGER.debug("%s, %s" % (output, errors))
-            output = self.sanitize_output(input=output.split('\n'))
-            if output["state"] != "Pass":
+            if proc.returncode != 0:
+                # should throw an error here?
+                LOGGER.error("%s, %s" % (output, errors))
+                out = "Execution error: %s, %s" % (output, errors)
+                return {"result": False,
+                        "time": time.time() - start,
+                        "data": out}
+            else:
+                out = self.sanitize_output(input=output.split('\n'))
+            if out["state"] != "Pass":
                 rc = False
             else:
                 rc = True
-            output['time'] = time.time() - start
-            output['result'] = rc
-            return output
+            out['time'] = time.time() - start
+            out['result'] = rc
+            return out
         except CalledProcessError as c:
             LOGGER.error("Evaluation failed: %s" % c.output)
             result = c.output

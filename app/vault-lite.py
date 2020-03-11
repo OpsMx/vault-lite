@@ -257,6 +257,7 @@ class PolicyVerification(Resource):
         vpath = request.path.split('/', 2)[-1]
         policy_paths = STORE.get_policies_by_path(path=vpath)
         if policy_paths:
+            # LOGGER.debug("Valid policy paths: %s" % policy_paths)
             rdata = get_data_on_mime(request)
             if "error" not in rdata:
                 data = prep_sentinel_data(rdata)
@@ -274,7 +275,7 @@ class PolicyVerification(Resource):
         else:
             msg = "No policies found for path: %s" % vpath
             LOGGER.error(msg)
-        return _return()
+        return _return(data=msg)
 
 
 if __name__ == '__main__':

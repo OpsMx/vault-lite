@@ -3,6 +3,7 @@
 POLICY="spinnaker/pipelines"
 POLICY="pipelines/pipeline_verification"
 POLICY="spinnaker/pipelines/pipeline_verification"
+POLICY="spinnaker/pipelines/time"
 
 INPUT="../inputs/execution_context.input"
 

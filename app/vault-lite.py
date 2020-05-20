@@ -42,7 +42,10 @@ STORE = PolicyStore.PolicyStore(location=POLICY_DIR)
 
 
 def _return(data={},  fail_code=400,  code=200):
-    LOGGER.debug("code: %s, fail_code: %s, data: %s", code, fail_code, data)
+    APP.logger.debug("code: %s, fail_code: %s, data: %s",
+                     code,
+                     fail_code,
+                     data)
     status = 400
     if 'result' in data and data['result'] is False:
         status = fail_code
@@ -52,7 +55,11 @@ def _return(data={},  fail_code=400,  code=200):
         return json.dumps(data), status
     elif 'result' in data and data['result'] is True:
         status = code
-        output = json.dumps({"data": data['data'][0]})
+        # Double check this against vault, use it for now to cheat..
+        if "data" in data:
+            output = json.dumps({"data": data['data'][0]})
+        else:
+            output = json.dumps({"data": data})
     else:
         output = json.dumps({"msg": data})
     # return output, status
@@ -64,7 +71,7 @@ def is_json(data):
         data = json.loads(data)
         return True
     except json.decoder.JSONDecodeError as e:
-        LOGGER.error("Unable to parse JSON, not JSON?: %s" % e)
+        logging.error("Unable to parse JSON, not JSON?: %s" % e)
     return False
 
 
@@ -77,11 +84,11 @@ def get_data_on_mime(request):
             return json.loads(read)
         return {"error": "Input is not JSON"}
     elif request.mimetype == "application/json":
-        LOGGER.warning("Vault by default doesn't do json")
+        logging.warning("Vault by default doesn't do json")
     else:
         if is_json(request.data):
             return json.loads(request.data)
-        LOGGER.warning("Invalid input; %s" % request.data)
+        logging.warning("Invalid input; %s" % request.data)
         return {"error": "Input is not JSON"}
 
 
@@ -129,13 +136,13 @@ class PolicyStorage(Resource):
     # check for base64 encoding, decode, store as KV..
     def put(self, path):
         """ Inserts a base64 encoded policy at the given EGP on path basis """
-        # LOGGER.debug("auth?: %s" % request.headers)
+        # logging.debug("auth?: %s" % request.headers)
         data = get_data_on_mime(request)
         rc = STORE.store_policy(key=path,
                                 paths=data['paths'],
                                 enforcement_level=data['enforcement_level'],
                                 policy=data['policy'])
-        LOGGER.debug("rc: %s" % rc)
+        logging.debug("rc: %s" % rc)
         data = {
             'data': rc
         }
@@ -152,7 +159,7 @@ class PolicyStorage(Resource):
     """ surplus """
     def list(self):
         """ Lists all known stored policy definitions """
-        # LOGGER.debug(request.headers)
+        # logging.debug(request.headers)
         rc = STORE.list_policies()
         return rc
 
@@ -162,7 +169,7 @@ class PolicyStorage(Resource):
             rc = STORE.get_policies_by_key(key=path)
         else:
             rc = STORE.list_policies()
-            LOGGER.debug(rc)
+            logging.debug(rc)
         data = {
             "data": {
                 path: rc
@@ -185,10 +192,10 @@ class PolicySimpleList(Resource):
         data = {}
         """ Lists all known stored policy definitions  """
         rc = STORE.list_policies()
-        LOGGER.debug(rc)
+        logging.debug(rc)
         # needs to improve tough....
         for p in rc:
-            LOGGER.debug("xx %s" % p)
+            logging.debug("xx %s" % p)
             data[p['key']] = p
         return {"data": data}, 200
 
@@ -231,7 +238,7 @@ class SysInternalUiMounts(Resource):
             info:
             https://www.vaultproject.io/api-docs/system/internal-ui-mounts/
         """
-        LOGGER.info("Received mount call to: %s" % path)
+        logging.info("Received mount call to: %s" % path)
         return {}
 
 # Fullfill path?
@@ -257,7 +264,7 @@ class PolicyVerification(Resource):
         vpath = request.path.split('/', 2)[-1]
         policy_paths = STORE.get_policies_by_path(path=vpath)
         if policy_paths:
-            # LOGGER.debug("Valid policy paths: %s" % policy_paths)
+            # logging.debug("Valid policy paths: %s" % policy_paths)
             rdata = get_data_on_mime(request)
             if "error" not in rdata:
                 data = prep_sentinel_data(rdata)
@@ -274,7 +281,7 @@ class PolicyVerification(Resource):
             return _return(data=res)
         else:
             msg = "No policies found for path: %s" % vpath
-            LOGGER.error(msg)
+            logging.error(msg)
         return _return(data=msg)
 
 
@@ -285,6 +292,6 @@ if __name__ == '__main__':
                         format=('%(asctime)s %(name)s %(filename)s:%(lineno)s '
                                 '%(funcName)s: %(message)s')
                         )
-    LOGGER = logging.getLogger(NAME)
+    logging = logging.getLogger(NAME)
 
     APP.run(debug=True, host="0.0.0.0", port=8200)

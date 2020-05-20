@@ -23,16 +23,20 @@ TITLE = "Swaggering ", NAME_LABEL
 POLICY_DIR = "vault-lite-store/policies"
 TEMP_DIR = "/tmp"
 
+prefix_path = os.getenv("PREFIX_PATH", default="")
+api_path = os.getenv("API_PATH", default="%s" % (prefix_path))
+doc_path = os.getenv("DOC_PATH", default="%s/v1/doc" % (prefix_path))
+
 APP = Flask(__name__)
 # restrict CORS later...
 CORS(APP, resources="/*")
 API = Api(APP,
-          doc='/swagger/',
+          prefix=api_path,
+          doc=doc_path,
           version=VERSION,
           title=TITLE,
           default=NAME,
           default_label=NAME_LABEL)
-
 DEBUG = False
 TRACE = False
 APP.config["DEBUG"] = DEBUG

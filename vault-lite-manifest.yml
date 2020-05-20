@@ -1,3 +1,12 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: "spinnaker"
+  labels:
+    name: "spinnaker"
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -17,12 +26,14 @@ spec:
     spec:
       containers:
       - name: vault-lite
-        image: opsmxdev/vault-lite:1.0
+        image: zappo/vault-lite:latest
         ports:
         - containerPort: 8200
         env:
           - name: VAULT_LITE_PORT
             value: "8200"
+          - name: PREFIX_PATH
+            value: "/vault-lite"
 
 ---
 apiVersion: v1
@@ -37,4 +48,3 @@ spec:
   - protocol: TCP
     port: 8200
     targetPort: 8200
-

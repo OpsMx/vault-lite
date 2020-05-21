@@ -1,0 +1,9 @@
+NAME = "vault-lite-api"
+NAME_LABEL = "Vault-lite"
+TITLE = "Swaggering ", NAME_LABEL
+POLICY_DIR = "vault-lite-store/policies"
+TEMP_DIR = "/tmp"
+TRACE = False
+DEBUG = False
+TEMP_PREFIX = NAME_LABEL
+VERSION = 0.1

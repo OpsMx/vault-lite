@@ -1,12 +1,4 @@
 ---
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: "spinnaker"
-  labels:
-    name: "spinnaker"
-
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -32,8 +24,6 @@ spec:
         env:
           - name: VAULT_LITE_PORT
             value: "8200"
-          - name: PREFIX_PATH
-            value: "/vault-lite"
 
 ---
 apiVersion: v1

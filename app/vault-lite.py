@@ -12,6 +12,7 @@ import logging
 from flask import Flask, request, Response
 from flask_cors import CORS
 from flask_restplus import Resource, Api
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from libs import Sentinel
 from libs import Models
 from libs import PolicyStore
@@ -24,8 +25,15 @@ POLICY_DIR = "vault-lite-store/policies"
 TEMP_DIR = "/tmp"
 
 prefix_path = os.getenv("PREFIX_PATH", default="")
-api_path = os.getenv("API_PATH", default="%s" % (prefix_path))
-doc_path = os.getenv("DOC_PATH", default="%s/v1/doc" % (prefix_path))
+api_path = os.getenv("API_PATH", default="/v1/api")
+doc_path = os.getenv("DOC_PATH", default="/v1/doc")
+
+if prefix_path != "" and not prefix_path.startswith("/") \
+                     and not prefix_path.endswith("/") \
+                     or prefix_path == "/":
+    print("ERROR: PREFIX_PATH has to start with a '/', but can't end in '/'")
+    sys.exit(1)
+print("PREFIX_PATH: %s" % prefix_path)
 
 APP = Flask(__name__)
 # restrict CORS later...
@@ -43,6 +51,10 @@ APP.config["DEBUG"] = DEBUG
 Sent = Sentinel.Sentinel(trace=TRACE)
 MODELS = Models.Models(API=API)
 STORE = PolicyStore.PolicyStore(location=POLICY_DIR)
+
+APP.wsgi_app = DispatcherMiddleware(APP, {
+    prefix_path: APP.wsgi_app,
+})
 
 
 def _return(data={},  fail_code=400,  code=200):

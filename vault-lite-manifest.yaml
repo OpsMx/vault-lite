@@ -24,7 +24,6 @@ spec:
         env:
           - name: VAULT_LITE_PORT
             value: "8200"
-        env:
           - name: PREFIX_PATH
             value: "/vault-lite"
 ---

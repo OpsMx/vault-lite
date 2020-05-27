@@ -33,6 +33,8 @@ metadata:
   name: vault-lite
   namespace: spinnaker
 spec:
+  type: ExternalName
+  externalName: vault-lite.spinnaker.svc.cluster.local
   selector:
     app: vault-lite
   ports:
